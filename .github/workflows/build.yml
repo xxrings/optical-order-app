@@ -1,0 +1,433 @@
+# GitHub Actions Workflow - Build and Deploy
+
+## Overview
+
+This workflow automates the build process for the Optical Order App, including Excel validation, data conversion, static build generation, and deployment to GitHub Pages.
+
+## Workflow Structure
+
+### Trigger Conditions
+- **Push to main branch**: Automatic build and deployment
+- **Pull Request**: Validation and testing only
+- **Manual trigger**: Manual workflow execution
+
+### Workflow Steps
+1. **Setup Environment**: Prepare build environment
+2. **Excel Validation**: Validate workbook structure and data
+3. **Data Conversion**: Convert Excel to JSON
+4. **Static Build**: Generate web application
+5. **Deployment**: Deploy to GitHub Pages
+
+## Workflow Configuration
+
+### YAML Structure
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install Python dependencies
+        run: |
+          pip install pandas openpyxl jsonschema
+          
+      - name: Install Node.js dependencies
+        run: npm ci
+        
+      - name: Validate Excel workbook
+        run: python scripts/validate_excel.py
+        
+      - name: Convert Excel to JSON
+        run: python scripts/convert_excel.py
+        
+      - name: Build static application
+        run: npm run build
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+```
+
+## Step Details
+
+### Step A: Excel Validation
+
+#### Purpose
+Validate the Excel workbook structure, data integrity, and business rules before processing.
+
+#### Implementation
+```python
+# scripts/validate_excel.py
+import pandas as pd
+import jsonschema
+import sys
+from pathlib import Path
+
+def validate_workbook(file_path: str) -> bool:
+    """Validate Excel workbook structure and data."""
+    
+    # Check file exists
+    if not Path(file_path).exists():
+        print(f"❌ Excel file not found: {file_path}")
+        return False
+    
+    # Load workbook
+    try:
+        workbook = pd.ExcelFile(file_path)
+    except Exception as e:
+        print(f"❌ Failed to load Excel file: {e}")
+        return False
+    
+    # Validate required tabs
+    required_tabs = [
+        "README", "Materials", "Treatments", "Designs", 
+        "AddPowerRules", "Availability", "Tints", 
+        "InstructionCodes", "TintCompatibility", "Frames"
+    ]
+    
+    missing_tabs = [tab for tab in required_tabs if tab not in workbook.sheet_names]
+    if missing_tabs:
+        print(f"❌ Missing required tabs: {missing_tabs}")
+        return False
+    
+    # Validate each tab
+    for tab_name in required_tabs:
+        if not validate_tab(workbook, tab_name):
+            return False
+    
+    print("✅ Excel workbook validation passed")
+    return True
+
+def validate_tab(workbook: pd.ExcelFile, tab_name: str) -> bool:
+    """Validate individual tab structure and data."""
+    
+    try:
+        df = pd.read_excel(workbook, sheet_name=tab_name)
+    except Exception as e:
+        print(f"❌ Failed to read tab '{tab_name}': {e}")
+        return False
+    
+    # Validate required columns
+    required_columns = get_required_columns(tab_name)
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        print(f"❌ Tab '{tab_name}' missing columns: {missing_columns}")
+        return False
+    
+    # Validate data types
+    if not validate_data_types(df, tab_name):
+        return False
+    
+    # Validate business rules
+    if not validate_business_rules(df, tab_name):
+        return False
+    
+    print(f"✅ Tab '{tab_name}' validation passed")
+    return True
+
+if __name__ == "__main__":
+    success = validate_workbook("Optical_Normalized_Catalog_FULL_v2.xlsx")
+    sys.exit(0 if success else 1)
+```
+
+### Step B: Data Conversion
+
+#### Purpose
+Convert validated Excel data to normalized JSON format for the web application.
+
+#### Implementation
+```python
+# scripts/convert_excel.py
+import pandas as pd
+import json
+from datetime import datetime
+from pathlib import Path
+
+def convert_excel_to_json(file_path: str, output_path: str) -> bool:
+    """Convert Excel workbook to normalized JSON."""
+    
+    try:
+        workbook = pd.ExcelFile(file_path)
+        
+        # Initialize catalog data
+        catalog = {
+            "metadata": generate_metadata(file_path),
+            "frames": [],
+            "materials": [],
+            "treatments": [],
+            "designs": [],
+            "addPowerRules": [],
+            "availability": [],
+            "tints": [],
+            "instructionCodes": [],
+            "tintCompatibility": []
+        }
+        
+        # Convert each tab
+        catalog["frames"] = convert_frames_tab(workbook)
+        catalog["materials"] = convert_materials_tab(workbook)
+        catalog["treatments"] = convert_treatments_tab(workbook)
+        catalog["designs"] = convert_designs_tab(workbook)
+        catalog["addPowerRules"] = convert_addpower_tab(workbook)
+        catalog["availability"] = convert_availability_tab(workbook)
+        catalog["tints"] = convert_tints_tab(workbook)
+        catalog["instructionCodes"] = convert_instructioncodes_tab(workbook)
+        catalog["tintCompatibility"] = convert_tintcompatibility_tab(workbook)
+        
+        # Update metadata with record counts
+        catalog["metadata"]["totalRecords"] = sum(len(catalog[key]) for key in catalog if key != "metadata")
+        
+        # Write JSON file
+        with open(output_path, 'w') as f:
+            json.dump(catalog, f, indent=2)
+        
+        print(f"✅ Successfully converted Excel to JSON: {output_path}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to convert Excel to JSON: {e}")
+        return False
+
+def generate_metadata(file_path: str) -> dict:
+    """Generate metadata for the catalog."""
+    return {
+        "version": "2.0",
+        "lastUpdated": datetime.now().isoformat(),
+        "sourceFile": Path(file_path).name,
+        "validationStatus": "valid",
+        "buildId": f"build-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+        "tabCount": 10,
+        "totalRecords": 0  # Will be updated after conversion
+    }
+
+def convert_frames_tab(workbook: pd.ExcelFile) -> list:
+    """Convert Frames tab to JSON array."""
+    df = pd.read_excel(workbook, sheet_name="Frames")
+    
+    frames = []
+    for _, row in df.iterrows():
+        frame = {
+            "id": str(row.get("id", "")),
+            "name": str(row.get("name", "")),
+            "brand": str(row.get("brand", "")),
+            "style": str(row.get("style", "")),
+            "material": str(row.get("material", "")),
+            "available": bool(row.get("available", True)),
+            "rimless": bool(row.get("rimless", False))
+        }
+        frames.append(frame)
+    
+    return frames
+
+# Similar functions for other tabs...
+
+if __name__ == "__main__":
+    success = convert_excel_to_json(
+        "Optical_Normalized_Catalog_FULL_v2.xlsx",
+        "public/catalog.json"
+    )
+    sys.exit(0 if success else 1)
+```
+
+### Step C: Static Build
+
+#### Purpose
+Generate the static web application using Next.js build process.
+
+#### Implementation
+```json
+// package.json build script
+{
+  "scripts": {
+    "build": "next build && next export",
+    "build:static": "next build && next export -o out"
+  }
+}
+```
+
+```javascript
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  },
+  experimental: {
+    appDir: true
+  }
+}
+
+module.exports = nextConfig
+```
+
+### Step D: Deployment
+
+#### Purpose
+Deploy the built application to GitHub Pages.
+
+#### Implementation
+```yaml
+- name: Deploy to GitHub Pages
+  uses: peaceiris/actions-gh-pages@v3
+  if: github.ref == 'refs/heads/main'
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    publish_dir: ./out
+    force_orphan: true
+```
+
+## Error Handling
+
+### Validation Failures
+```python
+def handle_validation_failure(error: str) -> None:
+    """Handle Excel validation failures."""
+    print(f"❌ Excel validation failed: {error}")
+    
+    # Create detailed error report
+    error_report = {
+        "timestamp": datetime.now().isoformat(),
+        "error": error,
+        "workbook": "Optical_Normalized_Catalog_FULL_v2.xlsx",
+        "build_id": os.environ.get("GITHUB_RUN_ID", "unknown")
+    }
+    
+    # Write error report
+    with open("validation-error.json", "w") as f:
+        json.dump(error_report, f, indent=2)
+    
+    # Exit with error code
+    sys.exit(1)
+```
+
+### Build Failures
+```yaml
+- name: Handle build failure
+  if: failure()
+  run: |
+    echo "❌ Build failed"
+    echo "Check the logs above for details"
+    exit 1
+```
+
+## Performance Optimization
+
+### Caching Strategy
+```yaml
+- name: Cache Python dependencies
+  uses: actions/cache@v3
+  with:
+    path: ~/.cache/pip
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    restore-keys: |
+      ${{ runner.os }}-pip-
+
+- name: Cache Node modules
+  uses: actions/cache@v3
+  with:
+    path: node_modules
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
+```
+
+### Parallel Processing
+```yaml
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Excel
+        run: python scripts/validate_excel.py
+  
+  build:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Build application
+        run: npm run build
+```
+
+## Monitoring and Reporting
+
+### Build Status
+```yaml
+- name: Report build status
+  run: |
+    echo "Build completed successfully"
+    echo "Build ID: ${{ github.run_id }}"
+    echo "Commit: ${{ github.sha }}"
+    echo "Branch: ${{ github.ref }}"
+```
+
+### Performance Metrics
+```yaml
+- name: Measure build time
+  run: |
+    echo "Build completed in ${{ steps.timer.outputs.duration }}"
+```
+
+## Security Considerations
+
+### Secrets Management
+```yaml
+- name: Use secrets
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+```
+
+### Input Validation
+```python
+def validate_inputs(file_path: str) -> bool:
+    """Validate input file path."""
+    if not file_path or not isinstance(file_path, str):
+        return False
+    
+    if not file_path.endswith('.xlsx'):
+        return False
+    
+    return True
+```
+
+## Future Enhancements
+
+### Advanced Features
+- **Incremental Builds**: Only rebuild changed components
+- **Parallel Processing**: Process multiple tabs simultaneously
+- **Advanced Validation**: More sophisticated business rule validation
+- **Performance Monitoring**: Track build performance over time
+
+### Integration Features
+- **Slack Notifications**: Notify team of build status
+- **Email Alerts**: Send email notifications for failures
+- **Dashboard Integration**: Update external dashboards
+- **Analytics**: Track build metrics and trends
