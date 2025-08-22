@@ -1,0 +1,591 @@
+{
+  "metadata": {
+    "version": "2.0-sample",
+    "lastUpdated": "2025-08-22T14:34:15.945441",
+    "sourceFile": "Sample_Data_Generated",
+    "validationStatus": "valid",
+    "buildId": "sample-20250822-143415",
+    "tabCount": 10,
+    "totalRecords": 49
+  },
+  "materials": [
+    {
+      "id": "CR39",
+      "displayName": "CR-39",
+      "refractiveIndex": 1.5,
+      "available": true,
+      "rimlessAllowed": true,
+      "notes": "Standard plastic lens material",
+      "labOutput": "CR39 CLEAR"
+    },
+    {
+      "id": "TRIVEX",
+      "displayName": "Trivex",
+      "refractiveIndex": 1.53,
+      "available": true,
+      "rimlessAllowed": true,
+      "notes": "Impact-resistant material",
+      "labOutput": "TRIVEX CLEAR"
+    },
+    {
+      "id": "HI160",
+      "displayName": "High Index 1.60",
+      "refractiveIndex": 1.6,
+      "available": true,
+      "rimlessAllowed": true,
+      "notes": "Thinner lens option",
+      "labOutput": "1.60 CLEAR"
+    }
+  ],
+  "treatments": [
+    {
+      "id": "CLEAR",
+      "type": "Clear",
+      "colorsAllowed": null,
+      "rimlessAllowed": true,
+      "notes": "No treatment applied",
+      "labOutput": "CLEAR"
+    },
+    {
+      "id": "TRANS",
+      "type": "Transition",
+      "colorsAllowed": "GRAY;BROWN (varies by design/material)",
+      "rimlessAllowed": true,
+      "notes": "Photochromic lenses",
+      "labOutput": "TRANSITION"
+    },
+    {
+      "id": "POLAR",
+      "type": "Polarized",
+      "colorsAllowed": "GRAY 3;BROWN 3;G-15 3 (varies)",
+      "rimlessAllowed": false,
+      "notes": "No rimless frames with polarized",
+      "labOutput": "POLARIZED"
+    }
+  ],
+  "designs": [
+    {
+      "id": "SV",
+      "category": "Single Vision",
+      "segmentType": null,
+      "segmentSize": null,
+      "minSegmentHeight": 0,
+      "discontinued": false,
+      "notes": null,
+      "labOutput": "SV",
+      "segmentOutput": null
+    },
+    {
+      "id": "FT28",
+      "category": "Bifocal",
+      "segmentType": "FT",
+      "segmentSize": 28.0,
+      "minSegmentHeight": 0,
+      "discontinued": false,
+      "notes": "Availability varies by material",
+      "labOutput": "FT-28",
+      "segmentOutput": 28.0
+    },
+    {
+      "id": "PAL",
+      "category": "Progressive",
+      "segmentType": null,
+      "segmentSize": null,
+      "minSegmentHeight": 18,
+      "discontinued": false,
+      "notes": "Minimum segment height 18mm",
+      "labOutput": "PROGRESSIVE",
+      "segmentOutput": null
+    }
+  ],
+  "frames": [
+    {
+      "id": 882020000976,
+      "brandModel": "7012 R",
+      "sku": 882020000976,
+      "color": "GREY",
+      "material": "Safety",
+      "dimensions": {
+        "a": 55,
+        "b": 34,
+        "dbl": 17,
+        "ed": null,
+        "temple": 140,
+        "framePd": 72
+      },
+      "collection": "Aeropostale",
+      "flags": {
+        "safety": true,
+        "sport": false
+      },
+      "sideShieldSku": 882020001614,
+      "heroImage": "7012_R_55_GREY_Hero.jpg",
+      "discontinued": false,
+      "backordered": false,
+      "notes": null
+    },
+    {
+      "id": 9398995400,
+      "brandModel": "7730",
+      "sku": 9398995400,
+      "color": "GUNMETAL",
+      "material": "Metal",
+      "dimensions": {
+        "a": 53,
+        "b": 37,
+        "dbl": 19,
+        "ed": null,
+        "temple": 145,
+        "framePd": 72
+      },
+      "collection": null,
+      "flags": {
+        "safety": false,
+        "sport": false
+      },
+      "sideShieldSku": null,
+      "heroImage": "7730_53_GUNMETAL_Hero.jpg",
+      "discontinued": false,
+      "backordered": false,
+      "notes": null
+    }
+  ],
+  "addPowerRules": [
+    {
+      "id": "CR39_FT28_CLEAR",
+      "designId": "FT28",
+      "materialId": "CR39",
+      "treatmentId": "CLEAR",
+      "addMin": 0.75,
+      "addMax": 6.0,
+      "incrementRule": null,
+      "notes": null
+    },
+    {
+      "id": "CR39_PAL_CLEAR",
+      "designId": "PAL",
+      "materialId": "CR39",
+      "treatmentId": "CLEAR",
+      "addMin": 0.75,
+      "addMax": 4.0,
+      "incrementRule": ">+4.00 in 0.50 steps",
+      "notes": "Min seg 18; else FREEFORM"
+    }
+  ],
+  "availability": [
+    {
+      "id": "CR39_SV_CLEAR",
+      "designId": "SV",
+      "materialId": "CR39",
+      "treatmentId": "CLEAR",
+      "available": true,
+      "rimlessAllowed": true,
+      "colorLimits": null,
+      "minSegmentHeight": 0,
+      "substitution": null,
+      "leadTimeWeeks": null,
+      "notes": null
+    },
+    {
+      "id": "CR39_PAL_CLEAR",
+      "designId": "PAL",
+      "materialId": "CR39",
+      "treatmentId": "CLEAR",
+      "available": true,
+      "rimlessAllowed": true,
+      "colorLimits": null,
+      "minSegmentHeight": 18,
+      "substitution": "If <18, use FREEFORM",
+      "leadTimeWeeks": 4.0,
+      "notes": "Add depends on total Rx"
+    },
+    {
+      "id": "TRIVEX_SV_POLAR",
+      "designId": "SV",
+      "materialId": "TRIVEX",
+      "treatmentId": "POLAR",
+      "available": true,
+      "rimlessAllowed": false,
+      "colorLimits": "BROWN may vary",
+      "minSegmentHeight": 0,
+      "substitution": null,
+      "leadTimeWeeks": null,
+      "notes": null
+    }
+  ],
+  "tints": [
+    {
+      "id": "BASE_GREY_SOLID",
+      "category": "Base",
+      "colorName": "GREY",
+      "style": "SOLID",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "fixedPercentage": null,
+      "availableIn": [
+        "Plastic",
+        "Trivex",
+        "Poly",
+        "1.60",
+        "1.67"
+      ],
+      "notes": "Solid only",
+      "labOutput": "GREY SOLID {PCT}%"
+    },
+    {
+      "id": "BASE_BROWN_SOLID",
+      "category": "Base",
+      "colorName": "BROWN",
+      "style": "SOLID",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "fixedPercentage": null,
+      "availableIn": [
+        "Plastic",
+        "Trivex",
+        "Poly",
+        "1.60",
+        "1.67"
+      ],
+      "notes": "Solid only",
+      "labOutput": "BROWN SOLID {PCT}%"
+    },
+    {
+      "id": "MIRROR_G15_FIXED",
+      "category": "Mirror",
+      "colorName": "G-15",
+      "style": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "fixedPercentage": 75.0,
+      "availableIn": [
+        "Glass"
+      ],
+      "notes": "Glass only; fixed 75%",
+      "labOutput": "G-15 MIRROR 75%"
+    }
+  ],
+  "instructionCodes": [
+    {
+      "code": "\\SI:ARC",
+      "label": "Anti-Reflective Coating",
+      "valueType": "ENUM",
+      "allowedValues": "ARC",
+      "outputTemplate": "\\SI:ARC"
+    },
+    {
+      "code": "\\TI11",
+      "label": "SOLID TINT",
+      "valueType": "NUMBER_PCT",
+      "allowedValues": "10-75",
+      "outputTemplate": "\\TI11:SOLID TINT"
+    },
+    {
+      "code": "\\SI1",
+      "label": "Tint Percent (x10)",
+      "valueType": "NUMBER_RAW",
+      "allowedValues": "100-750",
+      "outputTemplate": "\\SI1:{PCT}0"
+    }
+  ],
+  "tintCompatibility": [
+    {
+      "designId": "SV",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "SV",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "FT28",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "CR39",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "TRIVEX",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_GREY_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "BASE_BROWN_SOLID",
+      "allowed": true,
+      "styleRequired": "match",
+      "percentageMin": 10.0,
+      "percentageMax": 75.0,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    },
+    {
+      "designId": "PAL",
+      "materialId": "HI160",
+      "treatmentId": "TINT",
+      "tintId": "MIRROR_G15_FIXED",
+      "allowed": false,
+      "styleRequired": null,
+      "percentageMin": null,
+      "percentageMax": null,
+      "notes": "Base tint 10–75% (G-15 fixed 75%)"
+    }
+  ],
+  "indexes": {}
+}

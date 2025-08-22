@@ -1,0 +1,931 @@
+{
+  "file_info": {
+    "path": "data\\Optical_Normalized_Catalog_FULL_v2.xlsx",
+    "total_sheets": 10,
+    "sheet_names": [
+      "README",
+      "Materials",
+      "Treatments",
+      "Designs",
+      "AddPowerRules",
+      "Availability",
+      "Tints",
+      "InstructionCodes",
+      "TintCompatibility",
+      "Frames"
+    ]
+  },
+  "sheets": {
+    "README": {
+      "name": "README",
+      "rows": 20,
+      "columns": 1,
+      "column_names": [
+        "README"
+      ],
+      "data_types": {
+        "README": "object"
+      },
+      "sample_data": {
+        "README": [
+          "Optical Normalized Catalog (FULL)",
+          "Tabs:",
+          "  - Frames: frame catalog and dimensions (no PII)."
+        ]
+      },
+      "null_counts": {
+        "README": 3
+      },
+      "unique_counts": {
+        "README": 17
+      }
+    },
+    "Materials": {
+      "name": "Materials",
+      "rows": 6,
+      "columns": 7,
+      "column_names": [
+        "MATERIAL_ID",
+        "NAME_DISPLAY",
+        "INDEX",
+        "AVAILABLE",
+        "RIMLESS_ALLOWED",
+        "NOTES",
+        "OUTPUT_LM"
+      ],
+      "data_types": {
+        "MATERIAL_ID": "object",
+        "NAME_DISPLAY": "object",
+        "INDEX": "float64",
+        "AVAILABLE": "object",
+        "RIMLESS_ALLOWED": "object",
+        "NOTES": "object",
+        "OUTPUT_LM": "object"
+      },
+      "sample_data": {
+        "MATERIAL_ID": [
+          "CR39",
+          "TRIVEX",
+          "HI160"
+        ],
+        "NAME_DISPLAY": [
+          "CR39",
+          "Trivex",
+          "High Index 1.60"
+        ],
+        "INDEX": [
+          1.5,
+          1.53,
+          1.6
+        ],
+        "AVAILABLE": [
+          "Y",
+          "Y",
+          "Y"
+        ],
+        "RIMLESS_ALLOWED": [
+          "Y",
+          "Y",
+          "Y"
+        ],
+        "NOTES": [
+          "Some multifocal designs currently unavailable.",
+          "Use as substitute for older 1.55 lines.",
+          "Temporarily unavailable; substitute TRIVEX case-by-case."
+        ],
+        "OUTPUT_LM": [
+          "CR39 CLEAR",
+          "TRIVEX CLEAR",
+          "1.60 CLEAR"
+        ]
+      },
+      "null_counts": {
+        "MATERIAL_ID": 0,
+        "NAME_DISPLAY": 0,
+        "INDEX": 0,
+        "AVAILABLE": 0,
+        "RIMLESS_ALLOWED": 0,
+        "NOTES": 2,
+        "OUTPUT_LM": 0
+      },
+      "unique_counts": {
+        "MATERIAL_ID": 6,
+        "NAME_DISPLAY": 6,
+        "INDEX": 6,
+        "AVAILABLE": 2,
+        "RIMLESS_ALLOWED": 2,
+        "NOTES": 4,
+        "OUTPUT_LM": 6
+      }
+    },
+    "Treatments": {
+      "name": "Treatments",
+      "rows": 5,
+      "columns": 6,
+      "column_names": [
+        "TREATMENT_ID",
+        "TYPE",
+        "COLORS_ALLOWED",
+        "RIMLESS_ALLOWED",
+        "NOTES",
+        "OUTPUT_TREATMENT"
+      ],
+      "data_types": {
+        "TREATMENT_ID": "object",
+        "TYPE": "object",
+        "COLORS_ALLOWED": "object",
+        "RIMLESS_ALLOWED": "object",
+        "NOTES": "object",
+        "OUTPUT_TREATMENT": "object"
+      },
+      "sample_data": {
+        "TREATMENT_ID": [
+          "CLEAR",
+          "TRANS",
+          "POLAR"
+        ],
+        "TYPE": [
+          "Clear",
+          "Transition",
+          "Polarized"
+        ],
+        "COLORS_ALLOWED": [
+          "GRAY;BROWN (varies by design/material)",
+          "GRAY 3;BROWN 3;G-15 3 (varies)",
+          "PHOTO BROWN (limited)"
+        ],
+        "RIMLESS_ALLOWED": [
+          "Y",
+          "Y",
+          "N"
+        ],
+        "NOTES": [
+          "Brown availability varies.",
+          "No rimless frames with polarized.",
+          "Glass only; limited palette; long lead times."
+        ],
+        "OUTPUT_TREATMENT": [
+          "CLEAR",
+          "TRANSITION",
+          "POLARIZED"
+        ]
+      },
+      "null_counts": {
+        "TREATMENT_ID": 0,
+        "TYPE": 0,
+        "COLORS_ALLOWED": 1,
+        "RIMLESS_ALLOWED": 0,
+        "NOTES": 1,
+        "OUTPUT_TREATMENT": 0
+      },
+      "unique_counts": {
+        "TREATMENT_ID": 5,
+        "TYPE": 5,
+        "COLORS_ALLOWED": 4,
+        "RIMLESS_ALLOWED": 2,
+        "NOTES": 4,
+        "OUTPUT_TREATMENT": 5
+      }
+    },
+    "Designs": {
+      "name": "Designs",
+      "rows": 12,
+      "columns": 9,
+      "column_names": [
+        "DESIGN_ID",
+        "CATEGORY",
+        "SEG_TYPE",
+        "SEG_SIZE_REQUIRED",
+        "MIN_SEG_HEIGHT_MM",
+        "DISCONTINUED",
+        "NOTES",
+        "OUTPUT_LT",
+        "OUTPUT_SG"
+      ],
+      "data_types": {
+        "DESIGN_ID": "object",
+        "CATEGORY": "object",
+        "SEG_TYPE": "object",
+        "SEG_SIZE_REQUIRED": "float64",
+        "MIN_SEG_HEIGHT_MM": "int64",
+        "DISCONTINUED": "object",
+        "NOTES": "object",
+        "OUTPUT_LT": "object",
+        "OUTPUT_SG": "float64"
+      },
+      "sample_data": {
+        "DESIGN_ID": [
+          "SV",
+          "FT28",
+          "FT35"
+        ],
+        "CATEGORY": [
+          "Single Vision",
+          "Bifocal",
+          "Bifocal"
+        ],
+        "SEG_TYPE": [
+          "FT",
+          "FT",
+          "ROUND"
+        ],
+        "SEG_SIZE_REQUIRED": [
+          28.0,
+          35.0,
+          22.0
+        ],
+        "MIN_SEG_HEIGHT_MM": [
+          0,
+          0,
+          0
+        ],
+        "DISCONTINUED": [
+          "N",
+          "N",
+          "N"
+        ],
+        "NOTES": [
+          "Availability varies by material.",
+          "Availability varies by material.",
+          "Availability varies by material."
+        ],
+        "OUTPUT_LT": [
+          "SV",
+          "FT-28",
+          "FT-35"
+        ],
+        "OUTPUT_SG": [
+          28.0,
+          35.0,
+          22.0
+        ]
+      },
+      "null_counts": {
+        "DESIGN_ID": 0,
+        "CATEGORY": 0,
+        "SEG_TYPE": 4,
+        "SEG_SIZE_REQUIRED": 4,
+        "MIN_SEG_HEIGHT_MM": 0,
+        "DISCONTINUED": 0,
+        "NOTES": 5,
+        "OUTPUT_LT": 1,
+        "OUTPUT_SG": 4
+      },
+      "unique_counts": {
+        "DESIGN_ID": 12,
+        "CATEGORY": 7,
+        "SEG_TYPE": 4,
+        "SEG_SIZE_REQUIRED": 5,
+        "MIN_SEG_HEIGHT_MM": 3,
+        "DISCONTINUED": 2,
+        "NOTES": 5,
+        "OUTPUT_LT": 11,
+        "OUTPUT_SG": 5
+      }
+    },
+    "AddPowerRules": {
+      "name": "AddPowerRules",
+      "rows": 64,
+      "columns": 8,
+      "column_names": [
+        "RULE_ID",
+        "DESIGN_ID",
+        "MATERIAL_ID",
+        "TREATMENT_ID",
+        "ADD_MIN",
+        "ADD_MAX",
+        "INCREMENT_RULE",
+        "NOTES"
+      ],
+      "data_types": {
+        "RULE_ID": "object",
+        "DESIGN_ID": "object",
+        "MATERIAL_ID": "object",
+        "TREATMENT_ID": "object",
+        "ADD_MIN": "float64",
+        "ADD_MAX": "float64",
+        "INCREMENT_RULE": "object",
+        "NOTES": "object"
+      },
+      "sample_data": {
+        "RULE_ID": [
+          "CR39_FT28_CLEAR",
+          "CR39_FT35_CLEAR",
+          "CR39_RND22_CLEAR"
+        ],
+        "DESIGN_ID": [
+          "FT28",
+          "FT35",
+          "RND22"
+        ],
+        "MATERIAL_ID": [
+          "CR39",
+          "CR39",
+          "CR39"
+        ],
+        "TREATMENT_ID": [
+          "CLEAR",
+          "CLEAR",
+          "CLEAR"
+        ],
+        "ADD_MIN": [
+          0.75,
+          0.75,
+          0.75
+        ],
+        "ADD_MAX": [
+          6.0,
+          4.0,
+          6.0
+        ],
+        "INCREMENT_RULE": [
+          ">+4.50 in 0.50 steps",
+          ">+4.00 in 0.50 steps",
+          "Depends on total Rx"
+        ],
+        "NOTES": [
+          "Varies/call",
+          "Min seg 18; else FREEFORM",
+          "Min seg 18; else FREEFORM"
+        ]
+      },
+      "null_counts": {
+        "RULE_ID": 0,
+        "DESIGN_ID": 0,
+        "MATERIAL_ID": 0,
+        "TREATMENT_ID": 0,
+        "ADD_MIN": 3,
+        "ADD_MAX": 3,
+        "INCREMENT_RULE": 53,
+        "NOTES": 44
+      },
+      "unique_counts": {
+        "RULE_ID": 64,
+        "DESIGN_ID": 11,
+        "MATERIAL_ID": 5,
+        "TREATMENT_ID": 5,
+        "ADD_MIN": 5,
+        "ADD_MAX": 6,
+        "INCREMENT_RULE": 4,
+        "NOTES": 8
+      }
+    },
+    "Availability": {
+      "name": "Availability",
+      "rows": 76,
+      "columns": 11,
+      "column_names": [
+        "AVAIL_ID",
+        "DESIGN_ID",
+        "MATERIAL_ID",
+        "TREATMENT_ID",
+        "IS_AVAILABLE",
+        "RIMLESS_ALLOWED",
+        "COLOR_LIMITS",
+        "MIN_SEG_HEIGHT_MM",
+        "SUBSTITUTION",
+        "LEAD_TIME_WEEKS",
+        "NOTES"
+      ],
+      "data_types": {
+        "AVAIL_ID": "object",
+        "DESIGN_ID": "object",
+        "MATERIAL_ID": "object",
+        "TREATMENT_ID": "object",
+        "IS_AVAILABLE": "object",
+        "RIMLESS_ALLOWED": "object",
+        "COLOR_LIMITS": "object",
+        "MIN_SEG_HEIGHT_MM": "int64",
+        "SUBSTITUTION": "object",
+        "LEAD_TIME_WEEKS": "float64",
+        "NOTES": "object"
+      },
+      "sample_data": {
+        "AVAIL_ID": [
+          "CR39_SV_CLEAR",
+          "CR39_PAL_CLEAR",
+          "CR39_FREEFORM_CLEAR"
+        ],
+        "DESIGN_ID": [
+          "SV",
+          "PAL",
+          "FREEFORM"
+        ],
+        "MATERIAL_ID": [
+          "CR39",
+          "CR39",
+          "CR39"
+        ],
+        "TREATMENT_ID": [
+          "CLEAR",
+          "CLEAR",
+          "CLEAR"
+        ],
+        "IS_AVAILABLE": [
+          "Y",
+          "Y",
+          "Y"
+        ],
+        "RIMLESS_ALLOWED": [
+          "Y",
+          "Y",
+          "Y"
+        ],
+        "COLOR_LIMITS": [
+          "BROWN may vary",
+          "BROWN may vary",
+          "BROWN may vary"
+        ],
+        "MIN_SEG_HEIGHT_MM": [
+          0,
+          18,
+          14
+        ],
+        "SUBSTITUTION": [
+          "If <18, use FREEFORM",
+          "If <18, use FREEFORM",
+          "If <18, use FREEFORM"
+        ],
+        "LEAD_TIME_WEEKS": [
+          4.0,
+          4.0,
+          4.0
+        ],
+        "NOTES": [
+          "Add depends on total Rx",
+          "Add depends on total Rx",
+          "Add depends on total Rx"
+        ]
+      },
+      "null_counts": {
+        "AVAIL_ID": 0,
+        "DESIGN_ID": 0,
+        "MATERIAL_ID": 0,
+        "TREATMENT_ID": 0,
+        "IS_AVAILABLE": 0,
+        "RIMLESS_ALLOWED": 0,
+        "COLOR_LIMITS": 44,
+        "MIN_SEG_HEIGHT_MM": 0,
+        "SUBSTITUTION": 59,
+        "LEAD_TIME_WEEKS": 65,
+        "NOTES": 60
+      },
+      "unique_counts": {
+        "AVAIL_ID": 76,
+        "DESIGN_ID": 9,
+        "MATERIAL_ID": 6,
+        "TREATMENT_ID": 4,
+        "IS_AVAILABLE": 2,
+        "RIMLESS_ALLOWED": 2,
+        "COLOR_LIMITS": 3,
+        "MIN_SEG_HEIGHT_MM": 3,
+        "SUBSTITUTION": 3,
+        "LEAD_TIME_WEEKS": 1,
+        "NOTES": 6
+      }
+    },
+    "Tints": {
+      "name": "Tints",
+      "rows": 20,
+      "columns": 10,
+      "column_names": [
+        "TINT_ID",
+        "CATEGORY",
+        "COLOR_NAME",
+        "STYLE",
+        "PCT_MIN",
+        "PCT_MAX",
+        "FIXED_PCT",
+        "AVAILABLE_IN",
+        "NOTES",
+        "OUTPUT_TINT"
+      ],
+      "data_types": {
+        "TINT_ID": "object",
+        "CATEGORY": "object",
+        "COLOR_NAME": "object",
+        "STYLE": "object",
+        "PCT_MIN": "float64",
+        "PCT_MAX": "float64",
+        "FIXED_PCT": "float64",
+        "AVAILABLE_IN": "object",
+        "NOTES": "object",
+        "OUTPUT_TINT": "object"
+      },
+      "sample_data": {
+        "TINT_ID": [
+          "BASE_GREY_SOLID",
+          "BASE_GREY_GRAD",
+          "BASE_BROWN_SOLID"
+        ],
+        "CATEGORY": [
+          "Base",
+          "Base",
+          "Base"
+        ],
+        "COLOR_NAME": [
+          "GREY",
+          "GREY",
+          "BROWN"
+        ],
+        "STYLE": [
+          "SOLID",
+          "GRADIENT",
+          "SOLID"
+        ],
+        "PCT_MIN": [
+          10.0,
+          10.0,
+          10.0
+        ],
+        "PCT_MAX": [
+          75.0,
+          75.0,
+          75.0
+        ],
+        "FIXED_PCT": [
+          75.0,
+          75.0,
+          75.0
+        ],
+        "AVAILABLE_IN": [
+          "Plastic;Trivex;Poly;1.60;1.67",
+          "Plastic;Trivex;Poly;1.60;1.67",
+          "Plastic;Trivex;Poly;1.60;1.67"
+        ],
+        "NOTES": [
+          "Solid only",
+          "Solid only",
+          "Solid only"
+        ],
+        "OUTPUT_TINT": [
+          "GREY SOLID {PCT}%",
+          "GREY GRADIENT {PCT}%",
+          "BROWN SOLID {PCT}%"
+        ]
+      },
+      "null_counts": {
+        "TINT_ID": 0,
+        "CATEGORY": 0,
+        "COLOR_NAME": 0,
+        "STYLE": 1,
+        "PCT_MIN": 11,
+        "PCT_MAX": 11,
+        "FIXED_PCT": 9,
+        "AVAILABLE_IN": 0,
+        "NOTES": 4,
+        "OUTPUT_TINT": 1
+      },
+      "unique_counts": {
+        "TINT_ID": 20,
+        "CATEGORY": 3,
+        "COLOR_NAME": 18,
+        "STYLE": 2,
+        "PCT_MIN": 2,
+        "PCT_MAX": 1,
+        "FIXED_PCT": 1,
+        "AVAILABLE_IN": 5,
+        "NOTES": 13,
+        "OUTPUT_TINT": 19
+      }
+    },
+    "InstructionCodes": {
+      "name": "InstructionCodes",
+      "rows": 7,
+      "columns": 5,
+      "column_names": [
+        "CODE",
+        "LABEL",
+        "VALUE_TYPE",
+        "ALLOWED_VALUES",
+        "OUTPUT_TEMPLATE"
+      ],
+      "data_types": {
+        "CODE": "object",
+        "LABEL": "object",
+        "VALUE_TYPE": "object",
+        "ALLOWED_VALUES": "object",
+        "OUTPUT_TEMPLATE": "object"
+      },
+      "sample_data": {
+        "CODE": [
+          "\\SI:ARC",
+          "\\TI11",
+          "\\SI1"
+        ],
+        "LABEL": [
+          "Anti-Reflective Coating",
+          "SOLID TINT",
+          "Tint Percent (x10)"
+        ],
+        "VALUE_TYPE": [
+          "ENUM",
+          "NUMBER_PCT",
+          "NUMBER_RAW"
+        ],
+        "ALLOWED_VALUES": [
+          "ARC",
+          "10-75",
+          "100-750"
+        ],
+        "OUTPUT_TEMPLATE": [
+          "\\SI:ARC",
+          "\\TI11:SOLID TINT",
+          "\\SI1:{PCT}0"
+        ]
+      },
+      "null_counts": {
+        "CODE": 0,
+        "LABEL": 0,
+        "VALUE_TYPE": 0,
+        "ALLOWED_VALUES": 0,
+        "OUTPUT_TEMPLATE": 0
+      },
+      "unique_counts": {
+        "CODE": 7,
+        "LABEL": 7,
+        "VALUE_TYPE": 5,
+        "ALLOWED_VALUES": 6,
+        "OUTPUT_TEMPLATE": 7
+      }
+    },
+    "TintCompatibility": {
+      "name": "TintCompatibility",
+      "rows": 817,
+      "columns": 9,
+      "column_names": [
+        "DESIGN_ID",
+        "MATERIAL_ID",
+        "TREATMENT_ID",
+        "TINT_ID",
+        "ALLOWED",
+        "STYLE_REQUIRED",
+        "PCT_MIN",
+        "PCT_MAX",
+        "NOTES"
+      ],
+      "data_types": {
+        "DESIGN_ID": "object",
+        "MATERIAL_ID": "object",
+        "TREATMENT_ID": "object",
+        "TINT_ID": "object",
+        "ALLOWED": "object",
+        "STYLE_REQUIRED": "object",
+        "PCT_MIN": "float64",
+        "PCT_MAX": "float64",
+        "NOTES": "object"
+      },
+      "sample_data": {
+        "DESIGN_ID": [
+          "SV",
+          "SV",
+          "SV"
+        ],
+        "MATERIAL_ID": [
+          "CR39",
+          "CR39",
+          "CR39"
+        ],
+        "TREATMENT_ID": [
+          "TINT",
+          "TINT",
+          "TINT"
+        ],
+        "TINT_ID": [
+          "BASE_GREY_SOLID",
+          "BASE_GREY_GRAD",
+          "BASE_BROWN_SOLID"
+        ],
+        "ALLOWED": [
+          "Y",
+          "Y",
+          "Y"
+        ],
+        "STYLE_REQUIRED": [
+          "match",
+          "match",
+          "match"
+        ],
+        "PCT_MIN": [
+          10.0,
+          10.0,
+          10.0
+        ],
+        "PCT_MAX": [
+          75.0,
+          75.0,
+          75.0
+        ],
+        "NOTES": [
+          "Base tint 10–75% (G-15 fixed 75%)",
+          "Base tint 10–75% (G-15 fixed 75%)",
+          "Base tint 10–75% (G-15 fixed 75%)"
+        ]
+      },
+      "null_counts": {
+        "DESIGN_ID": 0,
+        "MATERIAL_ID": 0,
+        "TREATMENT_ID": 0,
+        "TINT_ID": 0,
+        "ALLOWED": 0,
+        "STYLE_REQUIRED": 46,
+        "PCT_MIN": 46,
+        "PCT_MAX": 46,
+        "NOTES": 0
+      },
+      "unique_counts": {
+        "DESIGN_ID": 10,
+        "MATERIAL_ID": 6,
+        "TREATMENT_ID": 2,
+        "TINT_ID": 20,
+        "ALLOWED": 2,
+        "STYLE_REQUIRED": 2,
+        "PCT_MIN": 2,
+        "PCT_MAX": 1,
+        "NOTES": 7
+      }
+    },
+    "Frames": {
+      "name": "Frames",
+      "rows": 374,
+      "columns": 19,
+      "column_names": [
+        "FRAME_ID",
+        "BRAND_MODEL",
+        "SKU",
+        "COLOR",
+        "MATERIAL",
+        "A",
+        "B",
+        "DBL",
+        "ED",
+        "TEMPLE",
+        "FRAME_PD",
+        "COLLECTION",
+        "SAFETY_FLAG",
+        "SPORT_FLAG",
+        "SIDE_SHIELD_SKU",
+        "HERO_IMAGE",
+        "DISCONTINUED",
+        "BACKORDERED",
+        "NOTES"
+      ],
+      "data_types": {
+        "FRAME_ID": "int64",
+        "BRAND_MODEL": "object",
+        "SKU": "int64",
+        "COLOR": "object",
+        "MATERIAL": "object",
+        "A": "int64",
+        "B": "int64",
+        "DBL": "int64",
+        "ED": "float64",
+        "TEMPLE": "int64",
+        "FRAME_PD": "int64",
+        "COLLECTION": "object",
+        "SAFETY_FLAG": "bool",
+        "SPORT_FLAG": "bool",
+        "SIDE_SHIELD_SKU": "float64",
+        "HERO_IMAGE": "object",
+        "DISCONTINUED": "bool",
+        "BACKORDERED": "bool",
+        "NOTES": "float64"
+      },
+      "sample_data": {
+        "FRAME_ID": [
+          882020000976,
+          882020001072,
+          9398995400
+        ],
+        "BRAND_MODEL": [
+          "7012 R",
+          "7013 R",
+          "7730"
+        ],
+        "SKU": [
+          882020000976,
+          882020001072,
+          9398995400
+        ],
+        "COLOR": [
+          "GREY",
+          "BLACK",
+          "GUNMETAL"
+        ],
+        "MATERIAL": [
+          "Safety",
+          "Safety",
+          "Metal"
+        ],
+        "A": [
+          55,
+          54,
+          53
+        ],
+        "B": [
+          34,
+          35,
+          37
+        ],
+        "DBL": [
+          17,
+          17,
+          19
+        ],
+        "ED": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "TEMPLE": [
+          140,
+          140,
+          145
+        ],
+        "FRAME_PD": [
+          72,
+          71,
+          72
+        ],
+        "COLLECTION": [
+          "Aeropostale",
+          "Aeropostale",
+          "Aeropostale"
+        ],
+        "SAFETY_FLAG": [
+          true,
+          true,
+          false
+        ],
+        "SPORT_FLAG": [
+          false,
+          false,
+          false
+        ],
+        "SIDE_SHIELD_SKU": [
+          882020001614.0,
+          882020001621.0,
+          819253021614.0
+        ],
+        "HERO_IMAGE": [
+          "7012_R_55_GREY_Hero.jpg",
+          "7013_R_54_BLACK_Hero.jpg",
+          "7730_53_GUNMETAL_Hero.jpg"
+        ],
+        "DISCONTINUED": [
+          false,
+          false,
+          false
+        ],
+        "BACKORDERED": [
+          false,
+          false,
+          false
+        ],
+        "NOTES": []
+      },
+      "null_counts": {
+        "FRAME_ID": 0,
+        "BRAND_MODEL": 0,
+        "SKU": 0,
+        "COLOR": 0,
+        "MATERIAL": 1,
+        "A": 0,
+        "B": 0,
+        "DBL": 0,
+        "ED": 353,
+        "TEMPLE": 0,
+        "FRAME_PD": 0,
+        "COLLECTION": 272,
+        "SAFETY_FLAG": 0,
+        "SPORT_FLAG": 0,
+        "SIDE_SHIELD_SKU": 367,
+        "HERO_IMAGE": 8,
+        "DISCONTINUED": 0,
+        "BACKORDERED": 0,
+        "NOTES": 374
+      },
+      "unique_counts": {
+        "FRAME_ID": 365,
+        "BRAND_MODEL": 117,
+        "SKU": 365,
+        "COLOR": 116,
+        "MATERIAL": 6,
+        "A": 17,
+        "B": 23,
+        "DBL": 9,
+        "ED": 2,
+        "TEMPLE": 7,
+        "FRAME_PD": 17,
+        "COLLECTION": 7,
+        "SAFETY_FLAG": 2,
+        "SPORT_FLAG": 2,
+        "SIDE_SHIELD_SKU": 6,
+        "HERO_IMAGE": 359,
+        "DISCONTINUED": 2,
+        "BACKORDERED": 1,
+        "NOTES": 0
+      }
+    }
+  }
+}
