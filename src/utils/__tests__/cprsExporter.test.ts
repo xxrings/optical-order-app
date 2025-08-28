@@ -155,13 +155,13 @@ describe('CPRS Exporter', () => {
     expect(lines.length).toBeGreaterThan(1);
 
     // Check specific CPRS format elements
-    expect(result).toContain('\\FRAME:Test Frame');
-    expect(result).toContain('\\SIZE:54x36');
-    expect(result).toContain('\\COLOR:Black');
-    expect(result).toContain('\\SKU#:FRAME001');
-    expect(result).toContain('\\FRAME STATUS:ACTIVE');
+    expect(result).toContain('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
+    expect(result).toContain('\\DELIVERY:');
+    expect(result).toContain('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
+    expect(result).toContain('\\fr:Test Frame       \\sz:54      \\col:Black              \\sku:FRAME001');
+    expect(result).toContain('\\FRAME STATUS:SUPPLIED');
     expect(result).toContain('\\EYEGLASS ORDERING INFORMATION:');
-    expect(result).toContain('\\RX_EYE:BOTH \\RX:OD -2.50 -1.00 90 OS -2.25 -0.75 85');
+    expect(result).toContain('\\RX_EYE:BOTH \\RX:3');
     expect(result).toContain('\\LENS MATERIAL:CR39 CLEAR CLEAR SV DISTANCE \\CD:0 \\LC:1 \\LMD:CLEAR');
     expect(result).toContain('\\LENS TYPE:SV DISTANCE \\LT:1');
     expect(result).toContain('\\SEG TYPE:');
@@ -169,11 +169,11 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\LENS TYPE1:');
     expect(result).toContain('\\SEG TYPE1:');
     expect(result).toContain('\\SPECTACLE RX:');
-    expect(result).toContain('\\OD1:-2.50 -1.00 90');
-    expect(result).toContain('\\PR1:\\PR2:\\PR3:\\ADD:');
+    expect(result).toContain('\\OD1:\\SP:-2.50\\C:-1.00\\AX:090\\PRISM:');
+    expect(result).toContain('\\PR1: \\PR2: \\PR3: \\ADD:');
     expect(result).toContain('\\SBC:');
-    expect(result).toContain('\\OS1:-2.25 -0.75 85');
-    expect(result).toContain('\\PR4:\\PR5:\\PR6:\\ADD1:');
+    expect(result).toContain('\\OS1:\\SP1:-2.25\\C1:-0.75\\AX1:085\\PRISM1:');
+    expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
     expect(result).toContain('\\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
     expect(result).toContain('\\OD2:\\OS2:');
@@ -195,10 +195,10 @@ describe('CPRS Exporter', () => {
     const result = buildCprsExport(orderData);
 
     // Should still produce the full CPRS structure with empty values
-    expect(result).toContain('\\FRAME:');
-    expect(result).toContain('\\SIZE:');
-    expect(result).toContain('\\COLOR:');
-    expect(result).toContain('\\SKU#:');
+    expect(result).toContain('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
+    expect(result).toContain('\\DELIVERY:');
+    expect(result).toContain('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
+    expect(result).toContain('\\fr:       \\sz:      \\col:              \\sku:');
     expect(result).toContain('\\FRAME STATUS:');
     expect(result).toContain('\\EYEGLASS ORDERING INFORMATION:');
     expect(result).toContain('\\RX_EYE: \\RX:');
@@ -209,11 +209,11 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\LENS TYPE1:');
     expect(result).toContain('\\SEG TYPE1:');
     expect(result).toContain('\\SPECTACLE RX:');
-    expect(result).toContain('\\OD1:');
-    expect(result).toContain('\\PR1:\\PR2:\\PR3:\\ADD:');
+    expect(result).toContain('\\OD1:\\SP:\\C:\\AX:\\PRISM:');
+    expect(result).toContain('\\PR1: \\PR2: \\PR3: \\ADD:');
     expect(result).toContain('\\SBC:');
-    expect(result).toContain('\\OS1:');
-    expect(result).toContain('\\PR4:\\PR5:\\PR6:\\ADD1:');
+    expect(result).toContain('\\OS1:\\SP1:\\C1:\\AX1:\\PRISM1:');
+    expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
     expect(result).toContain('\\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
     expect(result).toContain('\\OD2:\\OS2:');

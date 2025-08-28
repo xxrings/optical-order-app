@@ -22,20 +22,19 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   // Build the lines array
   const lines: string[] = [];
   
-  // Frame section
-  lines.push(`\\FRAME:${frame?.NAME || ''}`);
-  lines.push(`\\SIZE:${frameSpecs ? `${frameSpecs.LENS_WIDTH}x${frameSpecs.LENS_HEIGHT}` : ''}`);
-  lines.push(`\\COLOR:${frame?.COLOR || ''}`);
-  lines.push(`\\SKU#:${frame?.FRAME_ID || ''}`);
-  lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'ACTIVE'}`);
-  lines.push('');
+  // Frame section - CPRS format with two-line header
+  lines.push('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
+  lines.push('\\DELIVERY:');
+  lines.push('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
+  lines.push(`\\fr:${frame?.NAME || ''}       \\sz:${frameSpecs?.LENS_WIDTH || ''}      \\col:${frame?.COLOR || ''}              \\sku:${frame?.FRAME_ID || ''}`);
+  lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'SUPPLIED'}`);
   lines.push('\\EYEGLASS ORDERING INFORMATION:');
   lines.push('');
   
   // RX section
   const rxEye = getRxEyeText(selection.rxData);
-  const rxText = formatRxText(selection.rxData);
-  lines.push(`\\RX_EYE:${rxEye} \\RX:${rxText}`);
+  const rxCode = getRxCode(rxEye);
+  lines.push(`\\RX_EYE:${rxEye} \\RX:${rxCode}`);
   lines.push('');
   
   // Lens section
@@ -121,6 +120,16 @@ function getRxEyeText(rxData?: RxData): string {
   return '';
 }
 
+function getRxCode(rxEye: string): string {
+  switch (rxEye) {
+    case 'RIGHT': return '1';
+    case 'LEFT': return '2';
+    case 'BOTH': return '3';
+    case 'SPLIT': return '4';
+    default: return '';
+  }
+}
+
 function formatRxText(rxData?: RxData): string {
   if (!rxData) return '';
   
@@ -142,10 +151,10 @@ function formatRxText(rxData?: RxData): string {
 function formatLensMaterial(material?: any, treatment?: any, design?: any, availability?: any): string {
   const parts: string[] = [];
   
-  if (material?.NAME_DISPLAY) parts.push(material.NAME_DISPLAY);
-  if (treatment?.NAME_DISPLAY) parts.push(treatment.NAME_DISPLAY);
-  if (design?.TYPE) parts.push(design.TYPE);
-  if (design?.SEG_TYPE) parts.push(design.SEG_TYPE);
+  if (material?.NAME_DISPLAY) parts.push(material.NAME_DISPLAY.toUpperCase());
+  if (treatment?.NAME_DISPLAY) parts.push(treatment.NAME_DISPLAY.toUpperCase());
+  if (design?.TYPE) parts.push(design.TYPE.toUpperCase());
+  if (design?.SEG_TYPE) parts.push(design.SEG_TYPE.toUpperCase());
   
   let result = parts.join(' ');
   
@@ -162,7 +171,7 @@ function formatLensMaterial(material?: any, treatment?: any, design?: any, avail
 function formatLensType(design?: any, availability?: any): string {
   if (!design) return '';
   
-  let result = design.TYPE || '';
+  let result = design.TYPE?.toUpperCase() || '';
   
   // Add inline codes
   if (design.OUTPUT_LT) result += ` \\LT:${design.OUTPUT_LT}`;
@@ -173,60 +182,81 @@ function formatLensType(design?: any, availability?: any): string {
 
 function formatSegType(design?: any): string {
   if (!design) return '';
-  return design.SEG_TYPE || '';
+  return design.SEG_TYPE?.toUpperCase() || '';
 }
 
 function formatSpectacleRx(rxData?: RxData): string[] {
   const lines: string[] = [];
   
-  // Right eye (OD)
-  const od1 = formatSphereCylinderAxis(rxData?.rightSphere, rxData?.rightCylinder, rxData?.rightAxis);
-  const pr1 = formatPrism(rxData?.rightPrismVertical, rxData?.rightPrismVerticalDirection);
-  const pr2 = formatPrism(rxData?.rightPrismHorizontal, rxData?.rightPrismHorizontalDirection);
-  const pr3 = ''; // Additional prism field
+  // Right eye (OD) - CPRS format with sub-tokens
+  const spOd = formatSphere(rxData?.rightSphere);
+  const cOd = formatCylinder(rxData?.rightCylinder);
+  const axOd = formatAxis(rxData?.rightAxis);
+  const prismOd = formatPrismValue(rxData?.rightPrismVertical, rxData?.rightPrismHorizontal);
+  
+  const pr1Od = formatPrismDirection(rxData?.rightPrismVerticalDirection);
+  const pr2Od = formatPrismValue(rxData?.rightPrismVertical);
+  const pr3Od = formatPrismDirection(rxData?.rightPrismHorizontalDirection);
   const addOd = formatAdd(rxData?.rightAdd);
   const sbcOd = formatBaseCurve(rxData?.rightBaseCurve);
   
-  lines.push(`\\OD1:${od1}`);
-  lines.push(`\\PR1:${pr1}\\PR2:${pr2}\\PR3:${pr3}\\ADD:${addOd}`);
+  lines.push(`\\OD1:\\SP:${spOd}\\C:${cOd}\\AX:${axOd}\\PRISM:${prismOd}`);
+  lines.push(`\\PR1:${pr1Od} \\PR2:${pr2Od} \\PR3:${pr3Od} \\ADD:${addOd}`);
   lines.push(`\\SBC:${sbcOd}`);
   
-  // Left eye (OS)
-  const os1 = formatSphereCylinderAxis(rxData?.leftSphere, rxData?.leftCylinder, rxData?.leftAxis);
-  const pr4 = formatPrism(rxData?.leftPrismVertical, rxData?.leftPrismVerticalDirection);
-  const pr5 = formatPrism(rxData?.leftPrismHorizontal, rxData?.leftPrismHorizontalDirection);
-  const pr6 = ''; // Additional prism field
+  // Left eye (OS) - CPRS format with sub-tokens
+  const spOs = formatSphere(rxData?.leftSphere);
+  const cOs = formatCylinder(rxData?.leftCylinder);
+  const axOs = formatAxis(rxData?.leftAxis);
+  const prismOs = formatPrismValue(rxData?.leftPrismVertical, rxData?.leftPrismHorizontal);
+  
+  const pr4Os = formatPrismDirection(rxData?.leftPrismVerticalDirection);
+  const pr5Os = formatPrismValue(rxData?.leftPrismVertical);
+  const pr6Os = formatPrismDirection(rxData?.leftPrismHorizontalDirection);
   const addOs = formatAdd(rxData?.leftAdd);
   const sbcOs = formatBaseCurve(rxData?.leftBaseCurve);
   
-  lines.push(`\\OS1:${os1}`);
-  lines.push(`\\PR4:${pr4}\\PR5:${pr5}\\PR6:${pr6}\\ADD1:${addOs}`);
+  lines.push(`\\OS1:\\SP1:${spOs}\\C1:${cOs}\\AX1:${axOs}\\PRISM1:${prismOs}`);
+  lines.push(`\\PR4:${pr4Os} \\PR5:${pr5Os} \\PR6:${pr6Os} \\ADD1:${addOs}`);
   lines.push(`\\SBC1:${sbcOs}`);
   
   return lines;
 }
 
-function formatSphereCylinderAxis(sphere?: number, cylinder?: number, axis?: number): string {
-  const parts: string[] = [];
-  if (sphere !== undefined) parts.push(sphere.toFixed(2));
-  if (cylinder !== undefined) parts.push(cylinder.toFixed(2));
-  if (axis !== undefined) parts.push(axis.toString());
-  return parts.join(' ');
+function formatSphere(sphere?: number): string {
+  if (sphere === undefined) return '';
+  return sphere >= 0 ? `+${sphere.toFixed(2)}` : sphere.toFixed(2);
 }
 
-function formatPrism(value?: number, direction?: string): string {
-  if (value === undefined || value === 0) return '';
-  if (!direction) return value.toFixed(2);
+function formatCylinder(cylinder?: number): string {
+  if (cylinder === undefined) return '';
+  return cylinder >= 0 ? `+${cylinder.toFixed(2)}` : cylinder.toFixed(2);
+}
+
+function formatAxis(axis?: number): string {
+  if (axis === undefined) return '';
+  return axis.toString().padStart(3, '0');
+}
+
+function formatPrismValue(prism?: number): string {
+  if (prism === undefined || prism === 0) return '';
+  return prism.toFixed(2);
+}
+
+function formatPrismDirection(direction?: string): string {
+  if (!direction) return '';
   
   const directionMap: Record<string, string> = {
-    'up': 'U',
-    'down': 'D',
-    'in': 'I',
-    'out': 'O'
+    'up': 'UP',
+    'down': 'DOWN',
+    'in': 'IN',
+    'out': 'OUT'
   };
   
-  return `${value.toFixed(2)}${directionMap[direction] || ''}`;
+  return directionMap[direction] || '';
 }
+
+
 
 function formatAdd(value?: number): string {
   if (value === undefined) return '';
