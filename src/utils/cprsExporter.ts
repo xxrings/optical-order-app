@@ -192,7 +192,7 @@ function formatSpectacleRx(rxData?: RxData): string[] {
   const spOd = formatSphere(rxData?.rightSphere);
   const cOd = formatCylinder(rxData?.rightCylinder);
   const axOd = formatAxis(rxData?.rightAxis);
-  const prismOd = formatPrismValue(rxData?.rightPrismVertical, rxData?.rightPrismHorizontal);
+  const prismOd = formatCombinedPrismValue(rxData?.rightPrismVertical, rxData?.rightPrismHorizontal);
   
   const pr1Od = formatPrismDirection(rxData?.rightPrismVerticalDirection);
   const pr2Od = formatPrismValue(rxData?.rightPrismVertical);
@@ -208,7 +208,7 @@ function formatSpectacleRx(rxData?: RxData): string[] {
   const spOs = formatSphere(rxData?.leftSphere);
   const cOs = formatCylinder(rxData?.leftCylinder);
   const axOs = formatAxis(rxData?.leftAxis);
-  const prismOs = formatPrismValue(rxData?.leftPrismVertical, rxData?.leftPrismHorizontal);
+  const prismOs = formatCombinedPrismValue(rxData?.leftPrismVertical, rxData?.leftPrismHorizontal);
   
   const pr4Os = formatPrismDirection(rxData?.leftPrismVerticalDirection);
   const pr5Os = formatPrismValue(rxData?.leftPrismVertical);
@@ -241,6 +241,23 @@ function formatAxis(axis?: number): string {
 function formatPrismValue(prism?: number): string {
   if (prism === undefined || prism === 0) return '';
   return prism.toFixed(2);
+}
+
+function formatCombinedPrismValue(verticalPrism?: number, horizontalPrism?: number): string {
+  if ((verticalPrism === undefined || verticalPrism === 0) && 
+      (horizontalPrism === undefined || horizontalPrism === 0)) {
+    return '';
+  }
+  
+  // For CPRS, we'll use the first non-zero prism value
+  if (verticalPrism && verticalPrism !== 0) {
+    return verticalPrism.toFixed(2);
+  }
+  if (horizontalPrism && horizontalPrism !== 0) {
+    return horizontalPrism.toFixed(2);
+  }
+  
+  return '';
 }
 
 function formatPrismDirection(direction?: string): string {
