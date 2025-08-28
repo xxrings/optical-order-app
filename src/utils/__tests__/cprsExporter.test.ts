@@ -12,9 +12,10 @@ const mockCatalog: Catalog = {
       STYLE: 'Test Style',
       MATERIAL: 'Test Material',
       EYE_SIZE: 54,
-      COLOR: 'Black',
-      DISCONTINUED: 'N',
-      IMAGE_KEY: undefined
+             COLOR: 'Black',
+       DISCONTINUED: 'N',
+       SKU: 'FRAME001',
+       IMAGE_KEY: undefined
     }
   ],
   frameSpecsById: {
@@ -116,6 +117,9 @@ const mockCatalog: Catalog = {
 };
 
 const mockSelection: SelectionState = {
+  selectedFrameName: 'Test Frame',
+  selectedEyeSize: 54,
+  selectedFrameColor: 'Black',
   selectedFrameId: 'FRAME001',
   selectedMaterialId: 'MAT001',
   selectedTreatmentId: 'TREAT001',
@@ -158,7 +162,7 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
     expect(result).toContain('\\DELIVERY:');
     expect(result).toContain('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
-    expect(result).toContain('\\fr:Test Frame       \\sz:54      \\col:Black              \\sku:FRAME001');
+                                       expect(result).toContain('\\fr:TestFrame   \\sz:54      \\col:BLACK               \\sku:FRAME001');
     expect(result).toContain('\\FRAME STATUS:SUPPLIED');
     expect(result).toContain('\\EYEGLASS ORDERING INFORMATION:');
     expect(result).toContain('\\RX_EYE:BOTH \\RX:3');
@@ -176,10 +180,10 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
     expect(result).toContain('\\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
-    expect(result).toContain('\\OD2:\\OS2:');
+    expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3:30.5\\OS3:30.0');
-    expect(result).toContain('\\NEAR:\\OD4:\\OS4:');
+    expect(result).toContain('\\FAR:\\OD3:30.5 \\OS3:30.0');
+    expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
     expect(result).toContain('\\TI1:SOLID TINT \\SI1:1000');
     expect(result).toContain('\\TINT:BLUE, 50');
@@ -198,7 +202,7 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
     expect(result).toContain('\\DELIVERY:');
     expect(result).toContain('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
-    expect(result).toContain('\\fr:       \\sz:      \\col:              \\sku:');
+         expect(result).toContain('\\fr:       \\sz:      \\col:              \\sku:');
     expect(result).toContain('\\FRAME STATUS:');
     expect(result).toContain('\\EYEGLASS ORDERING INFORMATION:');
     expect(result).toContain('\\RX_EYE: \\RX:');
@@ -216,10 +220,10 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
     expect(result).toContain('\\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
-    expect(result).toContain('\\OD2:\\OS2:');
+    expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3:\\OS3:');
-    expect(result).toContain('\\NEAR:\\OD4:\\OS4:');
+    expect(result).toContain('\\FAR:\\OD3: \\OS3:');
+    expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
   });
 

@@ -10,8 +10,29 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   const { selection, catalog } = orderData;
   
   // Resolve all the data we need
-  const frame = catalog.frames.find(f => f.FRAME_ID === selection.selectedFrameId);
-  const frameSpecs = catalog.frameSpecsById[selection.selectedFrameId || ''];
+  const frame = selection.selectedFrameName && selection.selectedEyeSize && selection.selectedFrameColor 
+    ? catalog.frames.find(f => 
+        f.NAME === selection.selectedFrameName &&
+        f.EYE_SIZE === selection.selectedEyeSize &&
+        f.COLOR === selection.selectedFrameColor
+      )
+    : undefined;
+    
+  // Debug: Log frame lookup
+  console.log('CPRS frame lookup debug:', {
+    selectedFrameName: selection.selectedFrameName,
+    selectedEyeSize: selection.selectedEyeSize,
+    selectedFrameColor: selection.selectedFrameColor,
+    foundFrame: frame ? {
+      FRAME_ID: frame.FRAME_ID,
+      NAME: frame.NAME,
+      EYE_SIZE: frame.EYE_SIZE,
+      COLOR: frame.COLOR,
+      SKU: frame.SKU
+    } : null,
+    totalFrames: catalog.frames.length
+  });
+  const frameSpecs = frame ? catalog.frameSpecsById[frame.FRAME_ID] : undefined;
   const material = selection.selectedMaterialId ? catalog.materialsById[selection.selectedMaterialId] : undefined;
   const treatment = selection.selectedTreatmentId ? catalog.treatmentsById[selection.selectedTreatmentId] : undefined;
   const design = selection.selectedDesignId ? catalog.designsById[selection.selectedDesignId] : undefined;
@@ -33,7 +54,8 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   const colUpper = frame?.COLOR ? String(frame.COLOR).toUpperCase() : '';
   const sku = frame?.SKU ? String(frame.SKU) : '';
   
-  lines.push(`\\fr:${frNoSpace.padEnd(12)}\\sz:${String(szInt).padEnd(8)}\\col:${colUpper.padEnd(20)}\\sku:${sku}`);
+  // Use exact spacing from CPRS template - match the spacing exactly
+  lines.push(`\\fr:${frNoSpace}       \\sz:${String(szInt)}      \\col:${colUpper}              \\sku:${sku}`);
   lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'SUPPLIED'}`);
   lines.push('\\EYEGLASS ORDERING INFORMATION:');
   lines.push('');
@@ -293,7 +315,7 @@ function formatPrismDirection(direction?: string): string {
 
 function formatAdd(value?: number): string {
   if (value === undefined) return '';
-  return value.toFixed(2);
+  return value >= 0 ? `+${value.toFixed(2)}` : value.toFixed(2);
 }
 
 function formatBaseCurve(value?: number): string {

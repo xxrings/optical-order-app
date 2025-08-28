@@ -6,14 +6,15 @@ const goldenCatalog: Catalog = {
   frames: [
     {
       FRAME_ID: '7012R',
-      NAME: '7012R',
-      BRAND: 'Test Brand',
-      STYLE: 'Test Style',
-      MATERIAL: 'Test Material',
-      EYE_SIZE: 55,
-      COLOR: 'GREY',
-      DISCONTINUED: 'N',
-      IMAGE_KEY: undefined
+             NAME: '7012R',
+       BRAND: 'Test Brand',
+       STYLE: 'Test Style',
+       MATERIAL: 'Test Material',
+       EYE_SIZE: 55,
+       COLOR: 'GREY',
+       DISCONTINUED: 'N',
+       SKU: '7012R',
+       IMAGE_KEY: undefined
     }
   ],
   frameSpecsById: {
@@ -83,6 +84,9 @@ const goldenCatalog: Catalog = {
 };
 
 const goldenSelection: SelectionState = {
+  selectedFrameName: '7012R',
+  selectedEyeSize: 55,
+  selectedFrameColor: 'GREY',
   selectedFrameId: '7012R',
   selectedMaterialId: 'MAT001',
   selectedTreatmentId: 'TREAT001',
@@ -135,7 +139,7 @@ describe('CPRS Exporter - Golden Snapshot Test', () => {
  `\\EYEGLASS DELIVERY RECOMMENDATIONS:
  \\DELIVERY:
  \\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:
- \\fr:7012R       \\sz:55      \\col:GREY              \\sku:7012R
+           \\fr:7012R       \\sz:55      \\col:GREY                \\sku:7012R
  \\FRAME STATUS:SUPPLIED
  \\EYEGLASS ORDERING INFORMATION:
 

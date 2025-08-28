@@ -5,6 +5,7 @@ import { LabCodeGenerator } from '../utils/labCodeGenerator';
 import { ValidationEngine } from '../utils/validation';
 import { RxValidator, RxValidationResult } from '../utils/rxValidation';
 import { buildCprsExport } from '../utils/cprsExporter';
+import { testFrameData } from '../utils/testFrameData';
 
 interface UseCatalogReturn {
   catalog: Catalog | null;
@@ -55,6 +56,9 @@ export const useCatalog = (): UseCatalogReturn => {
       const randomId = Math.random().toString(36).substring(7);
       await excelParser.loadWorkbook(`/Optical_Catalog_Master_FRESH_SKU.xlsx?v=${timestamp}&r=${randomId}`);
       const catalogData = excelParser.parseCatalog();
+      
+      // Test frame data parsing
+      await testFrameData();
       
       setCatalog(catalogData);
       setLabCodeGenerator(new LabCodeGenerator(catalogData));

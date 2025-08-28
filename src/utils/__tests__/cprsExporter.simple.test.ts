@@ -48,10 +48,10 @@ describe('CPRS Exporter - Minimal Test', () => {
     expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
     expect(result).toContain('\\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
-    expect(result).toContain('\\OD2:\\OS2:');
+    expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3:\\OS3:');
-    expect(result).toContain('\\NEAR:\\OD4:\\OS4:');
+    expect(result).toContain('\\FAR:\\OD3: \\OS3:');
+    expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
 
     // Should end with CRLF
