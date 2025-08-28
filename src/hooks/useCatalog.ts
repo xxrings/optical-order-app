@@ -24,6 +24,7 @@ interface UseCatalogReturn {
   };
   updateSelection: (updates: Partial<SelectionState>) => void;
   updateRxData: (rxData: any) => void;
+  updatePatientMeasurements: (measurements: any) => void;
   updateSpecialInstructions: (instructions: string[]) => void;
   updateSpecialInstructionValues: (values: Record<string, string>) => void;
   rxAcknowledged: boolean;
@@ -135,6 +136,11 @@ export const useCatalog = (): UseCatalogReturn => {
     setSelection(prev => ({ ...prev, rxData }));
   }, []);
 
+  // Update patient measurements
+  const updatePatientMeasurements = useCallback((measurements: any) => {
+    setSelection(prev => ({ ...prev, patientMeasurements: measurements }));
+  }, []);
+
   // Update special instructions
   const updateSpecialInstructions = useCallback((instructions: string[]) => {
     setSelection(prev => ({ ...prev, specialInstructions: instructions }));
@@ -173,6 +179,7 @@ export const useCatalog = (): UseCatalogReturn => {
     availableOptions,
     updateSelection,
     updateRxData,
+    updatePatientMeasurements,
     updateSpecialInstructions,
     updateSpecialInstructionValues,
     rxAcknowledged,

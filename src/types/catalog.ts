@@ -156,6 +156,27 @@ export interface RxData {
   leftBaseCurve?: number;
 }
 
+// Patient measurements interface
+export interface PatientMeasurements {
+  // SV (Single Vision) measurements
+  rightMonoPD?: number;
+  leftMonoPD?: number;
+  rightOCHeight?: number; // Optional OC (Optical Center) height
+  leftOCHeight?: number;
+  
+  // Multifocal measurements
+  rightMonoDistancePD?: number;
+  leftMonoDistancePD?: number;
+  rightMonoNearPD?: number;
+  leftMonoNearPD?: number;
+  rightSegmentHeight?: number;
+  leftSegmentHeight?: number;
+  
+  // Progressive measurements
+  rightFittingHeight?: number;
+  leftFittingHeight?: number;
+}
+
 // Selection state interface
 export interface SelectionState {
   // Frame selection
@@ -172,6 +193,9 @@ export interface SelectionState {
   
   // Rx data
   rxData?: RxData;
+  
+  // Patient measurements
+  patientMeasurements?: PatientMeasurements;
   
   // Special instructions
   specialInstructions?: string[];
