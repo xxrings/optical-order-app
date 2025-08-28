@@ -4,6 +4,7 @@ import { excelParser } from '../utils/excelParser';
 import { LabCodeGenerator } from '../utils/labCodeGenerator';
 import { ValidationEngine } from '../utils/validation';
 import { RxValidator, RxValidationResult } from '../utils/rxValidation';
+import { buildCprsExport } from '../utils/cprsExporter';
 
 interface UseCatalogReturn {
   catalog: Catalog | null;
@@ -13,6 +14,7 @@ interface UseCatalogReturn {
   validation: ValidationResult;
   rxValidation: RxValidationResult;
   labText: string;
+  cprsText: string;
   availableOptions: {
     frameNames: string[];
     eyeSizes: number[];
@@ -157,6 +159,9 @@ export const useCatalog = (): UseCatalogReturn => {
   // Get lab text
   const labText = labCodeGenerator?.generateLabText(selection) || '';
 
+  // Get CPRS text
+  const cprsText = catalog ? buildCprsExport({ selection, catalog }) : '';
+
   // Get available options for cascading dropdowns
   const availableOptions = validationEngine?.getAvailableOptions(selection) || {
     frameNames: [],
@@ -176,6 +181,7 @@ export const useCatalog = (): UseCatalogReturn => {
     validation,
     rxValidation,
     labText,
+    cprsText,
     availableOptions,
     updateSelection,
     updateRxData,

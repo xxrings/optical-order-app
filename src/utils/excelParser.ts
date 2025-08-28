@@ -38,8 +38,11 @@ export class ExcelParser {
     // Debug: List all available sheets
     console.log('Available sheets in workbook:', Object.keys(this.workbook.Sheets));
     
-    // Validate required sheets exist
-    const REQUIRED_SHEETS = ["InstructionCodes", "Tints"];
+    // Validate required sheets exist for CPRS export
+    const REQUIRED_SHEETS = [
+      "Frames", "FrameSpecs", "Materials", "Treatments", "Designs", 
+      "Availability", "Tints", "FresnelOptions", "InstructionCodes"
+    ];
     const availableSheets = Object.keys(this.workbook.Sheets);
     for (const sheet of REQUIRED_SHEETS) {
       if (!availableSheets.includes(sheet)) {
@@ -243,6 +246,9 @@ export class ExcelParser {
     const headers = jsonData[0] as string[];
     const rows = jsonData.slice(1) as any[][];
 
+    // Validate required headers for CPRS export
+    this.validateSheetHeaders(sheetName, headers);
+
     // Debug: Show raw Excel data for key sheets
     if (sheetName === 'InstructionCodes' || sheetName === 'Tints') {
       console.log(`Raw Excel data for ${sheetName}:`, {
@@ -318,6 +324,24 @@ export class ExcelParser {
     });
     
     return map;
+  }
+
+  private validateSheetHeaders(sheetName: string, headers: string[]): void {
+    const requiredHeaders: Record<string, string[]> = {
+      'Designs': ['DESIGN_ID', 'OUTPUT_LT', 'OUTPUT_SG', 'DISCONTINUED'],
+      'Availability': ['DESIGN_ID', 'MATERIAL_ID', 'TREATMENT_ID', 'COLOR', 'OUTPUT_CD', 'OUTPUT_LC', 'OUTPUT_LMD'],
+      'InstructionCodes': ['CODE', 'LABEL', 'VALUE_TYPE', 'ALLOWED_VALUES', 'OUTPUT_TEMPLATE', 'NOTES'],
+      'Tints': ['TINT_ID', 'STYLE', 'COLOR_NAME', 'PCT', 'OUTPUT_TOKEN', 'NOTES'],
+      'FresnelOptions': ['FRES_ID', 'VALUE', 'OUTPUT_TOKEN']
+    };
+
+    const required = requiredHeaders[sheetName];
+    if (required) {
+      const missingHeaders = required.filter(header => !headers.includes(header));
+      if (missingHeaders.length > 0) {
+        throw new Error(`Sheet "${sheetName}" missing required headers: ${missingHeaders.join(', ')}. Found: ${headers.join(', ')}`);
+      }
+    }
   }
 
   // Helper method to reload catalog (for development)

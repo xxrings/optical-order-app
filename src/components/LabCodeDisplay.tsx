@@ -3,6 +3,7 @@ import { SelectionState, Catalog } from '../types/catalog';
 
 interface LabCodeDisplayProps {
   labText: string;
+  cprsText: string;
   selection: SelectionState;
   catalog: Catalog;
   isValid: boolean;
@@ -10,11 +11,13 @@ interface LabCodeDisplayProps {
 
 const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
   labText,
+  cprsText,
   selection,
   catalog,
   isValid
 }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedCprs, setCopiedCprs] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -26,6 +29,16 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
     }
   };
 
+  const handleCopyCprs = async () => {
+    try {
+      await navigator.clipboard.writeText(cprsText);
+      setCopiedCprs(true);
+      setTimeout(() => setCopiedCprs(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy CPRS text:', err);
+    }
+  };
+
   const hasCompleteSelection = selection.selectedFrameName && 
                               selection.selectedMaterialId && 
                               selection.selectedTreatmentId && 
@@ -34,7 +47,7 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">
-        Lab Code Output
+        Output Formats
       </h2>
 
       {!hasCompleteSelection ? (
@@ -52,11 +65,11 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
           </p>
         </div>
       ) : labText ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Lab Text Display */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Generated Lab Text
+              Lab Code Format
             </label>
             <div className="relative">
               <textarea
@@ -70,6 +83,27 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
                 className="absolute top-2 right-2 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
               >
                 {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+
+          {/* CPRS Text Display */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              CPRS Format (Exact Text)
+            </label>
+            <div className="relative">
+              <textarea
+                value={cprsText}
+                readOnly
+                rows={12}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 font-mono text-xs"
+              />
+              <button
+                onClick={handleCopyCprs}
+                className="absolute top-2 right-2 px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+              >
+                {copiedCprs ? 'Copied!' : 'Copy'}
               </button>
             </div>
           </div>

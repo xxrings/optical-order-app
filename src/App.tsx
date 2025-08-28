@@ -18,6 +18,7 @@ function App() {
     validation,
     rxValidation,
     labText,
+    cprsText,
     availableOptions,
     updateSelection,
     updateRxData,
@@ -149,12 +150,13 @@ function App() {
 
           {/* Right Column - Lab Code Display */}
           <div className="space-y-8">
-            <LabCodeDisplay
-              labText={labText}
-              selection={selection}
-              catalog={catalog}
-              isValid={validation.isValid && rxValidation.isValid && (!rxValidation.requiresAcknowledgment || rxAcknowledged)}
-            />
+                         <LabCodeDisplay
+               labText={labText}
+               cprsText={cprsText}
+               selection={selection}
+               catalog={catalog}
+               isValid={validation.isValid && rxValidation.isValid && (!rxValidation.requiresAcknowledgment || rxAcknowledged)}
+             />
           </div>
         </div>
       </main>
