@@ -3,7 +3,7 @@ import { useCatalog } from './hooks/useCatalog';
 import FrameSelector from './components/FrameSelector';
 import LensSelector from './components/LensSelector';
 import { RxInput } from './components/RxInput';
-import { PatientMeasurements } from './components/PatientMeasurements';
+import { PatientMeasurementsComponent } from './components/PatientMeasurements';
 import { SpecialInstructions } from './components/SpecialInstructions';
 import LabCodeDisplay from './components/LabCodeDisplay';
 import ValidationMessages from './components/ValidationMessages';
@@ -124,12 +124,12 @@ function App() {
                      onAcknowledgmentChange={setRxAcknowledged}
                    />
 
-                               {/* Patient Measurements */}
-                   <PatientMeasurements
-                     measurements={selection.patientMeasurements}
-                     onMeasurementsChange={updatePatientMeasurements}
-                     selectedDesign={catalog?.designsById[selection.selectedDesignId || '']}
-                   />
+                                                               {/* Patient Measurements */}
+                    <PatientMeasurementsComponent
+                      measurements={selection.patientMeasurements}
+                      onMeasurementsChange={updatePatientMeasurements}
+                      selectedDesign={catalog?.designsById[selection.selectedDesignId || '']}
+                    />
 
                                        {/* Special Instructions */}
                     <SpecialInstructions

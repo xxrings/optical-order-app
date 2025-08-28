@@ -9,7 +9,7 @@ interface PatientMeasurementsProps {
   selectedDesign: DesignRow | undefined;
 }
 
-export const PatientMeasurements: React.FC<PatientMeasurementsProps> = ({
+export const PatientMeasurementsComponent: React.FC<PatientMeasurementsProps> = ({
   measurements,
   onMeasurementsChange,
   selectedDesign
