@@ -179,7 +179,7 @@ export const RxInput: React.FC<RxInputProps> = ({
             </label>
             <input
               type="number"
-              step="0.25"
+              step="0.50"
               min="0"
               max="9.00"
               value={rxData?.[`${prefix}BaseCurve` as keyof RxData] || ''}
@@ -252,7 +252,7 @@ export const RxInput: React.FC<RxInputProps> = ({
            <li>• Axis: 1 to 180 degrees</li>
            <li>• Prism: Positive values in 0.25 increments with direction (up/down for vertical, in/out for horizontal)</li>
            <li>• Add: 0.75 to 4.00 in 0.25 increments</li>
-           <li>• Base Curve: 0.00 to 9.00 in 0.25 increments</li>
+           <li>• Base Curve: 0.00 to 9.00 in 0.50 increments</li>
          </ul>
       </div>
     </div>

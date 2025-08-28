@@ -134,8 +134,8 @@ export class RxValidator {
     if (value === undefined) return;
     
     // Check increment
-    if (!this.isValidIncrement(value, 0.25)) {
-      errors.push(`${eye} Base Curve must be in 0.25 increments`);
+    if (!this.isValidIncrement(value, 0.50)) {
+      errors.push(`${eye} Base Curve must be in 0.50 increments`);
       return;
     }
     
