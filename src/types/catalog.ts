@@ -15,6 +15,7 @@ export interface FrameRow {
   EYE_SIZE: number;
   COLOR: string;
   DISCONTINUED: 'Y' | 'N';
+  SKU?: string;
   IMAGE_KEY?: string;
 }
 

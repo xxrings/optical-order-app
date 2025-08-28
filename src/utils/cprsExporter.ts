@@ -22,11 +22,18 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   // Build the lines array
   const lines: string[] = [];
   
-  // Frame section - CPRS format with two-line header
+  // Frame section - CPRS format with exact spacing
   lines.push('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
   lines.push('\\DELIVERY:');
   lines.push('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
-  lines.push(`\\fr:${frame?.NAME || ''}       \\sz:${frameSpecs?.LENS_WIDTH || ''}      \\col:${frame?.COLOR || ''}              \\sku:${frame?.FRAME_ID || ''}`);
+  
+  // Format frame header with exact spacing
+  const frNoSpace = frame?.NAME ? frame.NAME.replace(/\s+/g, '') : '';
+  const szInt = frame?.EYE_SIZE ? Math.round(Number(frame.EYE_SIZE)) : '';
+  const colUpper = frame?.COLOR ? String(frame.COLOR).toUpperCase() : '';
+  const sku = frame?.SKU ? String(frame.SKU) : '';
+  
+  lines.push(`\\fr:${frNoSpace.padEnd(12)}\\sz:${String(szInt).padEnd(8)}\\col:${colUpper.padEnd(20)}\\sku:${sku}`);
   lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'SUPPLIED'}`);
   lines.push('\\EYEGLASS ORDERING INFORMATION:');
   lines.push('');
@@ -158,11 +165,15 @@ function formatLensMaterial(material?: any, treatment?: any, design?: any, avail
   
   let result = parts.join(' ');
   
-  // Add inline codes if availability exists
+  // Add inline codes in exact order: CD, LC, LMD
   if (availability) {
-    if (availability.OUTPUT_CD) result += ` \\CD:${availability.OUTPUT_CD}`;
-    if (availability.OUTPUT_LC) result += ` \\LC:${availability.OUTPUT_LC}`;
-    if (availability.OUTPUT_LMD) result += ` \\LMD:${availability.OUTPUT_LMD}`;
+    const codes: string[] = [];
+    if (availability.OUTPUT_CD) codes.push(`\\CD:${availability.OUTPUT_CD}`);
+    if (availability.OUTPUT_LC) codes.push(`\\LC:${availability.OUTPUT_LC}`);
+    if (availability.OUTPUT_LMD) codes.push(`\\LMD:${availability.OUTPUT_LMD}`);
+    if (codes.length > 0) {
+      result += ' ' + codes.join(' ');
+    }
   }
   
   return result;
@@ -173,9 +184,14 @@ function formatLensType(design?: any, availability?: any): string {
   
   let result = design.TYPE?.toUpperCase() || '';
   
-  // Add inline codes
-  if (design.OUTPUT_LT) result += ` \\LT:${design.OUTPUT_LT}`;
-  if (design.OUTPUT_SG) result += ` \\SG:${design.OUTPUT_SG}`;
+  // Add inline codes in exact order: LT, then optional SG
+  const codes: string[] = [];
+  if (design.OUTPUT_LT) codes.push(`\\LT:${design.OUTPUT_LT}`);
+  if (design.OUTPUT_SG) codes.push(`\\SG:${design.OUTPUT_SG}`);
+  
+  if (codes.length > 0) {
+    result += ' ' + codes.join(' ');
+  }
   
   return result;
 }
@@ -289,12 +305,12 @@ function formatSegmentHeight(measurements?: PatientMeasurements, design?: any): 
   const lensType = getLensType(design);
   
   if (lensType === 'MULTIFOCAL') {
-    const od2 = measurements?.rightSegmentHeight?.toFixed(1) || '';
-    const os2 = measurements?.leftSegmentHeight?.toFixed(1) || '';
-    return [`\\OD2:${od2}\\OS2:${os2}`];
+    const od2 = measurements?.rightSegmentHeight ? Math.round(Number(measurements.rightSegmentHeight)).toString() : '';
+    const os2 = measurements?.leftSegmentHeight ? Math.round(Number(measurements.leftSegmentHeight)).toString() : '';
+    return [`\\OD2:${od2} \\OS2:${os2}`];
   }
   
-  return ['\\OD2:\\OS2:'];
+  return ['\\OD2: \\OS2:'];
 }
 
 function formatPupillaryDistance(measurements?: PatientMeasurements, design?: any): string[] {
@@ -305,20 +321,20 @@ function formatPupillaryDistance(measurements?: PatientMeasurements, design?: an
     // Single vision - mono PDs
     const od3 = measurements?.rightMonoPD?.toFixed(1) || '';
     const os3 = measurements?.leftMonoPD?.toFixed(1) || '';
-    lines.push(`\\FAR:\\OD3:${od3}\\OS3:${os3}`);
-    lines.push('\\NEAR:\\OD4:\\OS4:');
+    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3}`);
+    lines.push('\\NEAR:\\OD4: \\OS4:');
   } else if (lensType === 'MULTIFOCAL' || lensType === 'PROGRESSIVE') {
     // Multifocal/Progressive - distance and near PDs
     const od3 = measurements?.rightMonoDistancePD?.toFixed(1) || '';
     const os3 = measurements?.leftMonoDistancePD?.toFixed(1) || '';
     const od4 = measurements?.rightMonoNearPD?.toFixed(1) || '';
     const os4 = measurements?.leftMonoNearPD?.toFixed(1) || '';
-    lines.push(`\\FAR:\\OD3:${od3}\\OS3:${os3}`);
-    lines.push(`\\NEAR:\\OD4:${od4}\\OS4:${os4}`);
+    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3}`);
+    lines.push(`\\NEAR:\\OD4:${od4} \\OS4:${os4}`);
   } else {
     // Default
-    lines.push('\\FAR:\\OD3:\\OS3:');
-    lines.push('\\NEAR:\\OD4:\\OS4:');
+    lines.push('\\FAR:\\OD3: \\OS3:');
+    lines.push('\\NEAR:\\OD4: \\OS4:');
   }
   
   return lines;
@@ -337,7 +353,7 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
     return lines; // Just the header, no additional lines
   }
   
-  // Build summary line
+  // Build summary line with comma+space separation
   const summaryParts: string[] = [];
   
   // Process instructions in TI order (TI1-TI13)
@@ -363,7 +379,7 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
     lines.push(summaryParts.join(', '));
   }
   
-  // Build detail lines
+  // Build detail lines in numeric order
   for (let i = 1; i <= 13; i++) {
     const tiCode = `TI${i}`;
     if (selectedInstructions.includes(tiCode)) {
@@ -403,6 +419,7 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
             lines.push(`\\FRES:${fresnel.VALUE}`);
           }
         }
+        // TI4-TI12 have no dependent lines
       }
     }
   }
