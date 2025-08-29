@@ -21,15 +21,45 @@ export function buildCprsExport(orderData: CprsOrderData): string {
 
   // Build frames index for SKU lookup
   const framesIndex = new Map<string, string>();
+  console.log("Building frames index for SKU lookup...");
+  console.log("Total frames in catalog:", catalog.frames.length);
+  
   for (const r of catalog.frames) {
     const key = `${normFrameName(r.NAME)}|${toInt(r.EYE_SIZE)}|${normColor(r.COLOR)}`;
     framesIndex.set(key, r.SKU ?? "");
+    
+    // Log a few sample frames to verify SKU data
+    if (catalog.frames.indexOf(r) < 5) {
+      console.log("Sample frame:", {
+        original: { NAME: r.NAME, EYE_SIZE: r.EYE_SIZE, COLOR: r.COLOR, SKU: r.SKU },
+        normalized: { 
+          name: normFrameName(r.NAME), 
+          eyeSize: toInt(r.EYE_SIZE), 
+          color: normColor(r.COLOR) 
+        },
+        key: key,
+        hasSku: Boolean(r.SKU)
+      });
+    }
   }
+  
+  console.log("Frames index built with", framesIndex.size, "entries");
+  console.log("Sample keys in index:", Array.from(framesIndex.keys()).slice(0, 5));
 
   // Look up frame using normalized keys
   const frameKey = selection.selectedFrameName && selection.selectedEyeSize && selection.selectedFrameColor 
     ? `${normFrameName(selection.selectedFrameName)}|${toInt(selection.selectedEyeSize)}|${normColor(selection.selectedFrameColor)}`
     : null;
+    
+  console.log("Frame selection for SKU lookup:", {
+    selectedFrameName: selection.selectedFrameName,
+    selectedEyeSize: selection.selectedEyeSize,
+    selectedFrameColor: selection.selectedFrameColor,
+    normalizedName: selection.selectedFrameName ? normFrameName(selection.selectedFrameName) : null,
+    normalizedEyeSize: selection.selectedEyeSize ? toInt(selection.selectedEyeSize) : null,
+    normalizedColor: selection.selectedFrameColor ? normColor(selection.selectedFrameColor) : null,
+    lookupKey: frameKey
+  });
   
   const frame = frameKey ? catalog.frames.find(f => 
     normFrameName(f.NAME) === normFrameName(selection.selectedFrameName!) &&
@@ -98,7 +128,16 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   
   // Use exact spacing from gold template
   lines.push(`\\fr:${frNoSpace}       \\sz:${String(szInt)}      \\col:${colUpper}              \\sku:${sku}`);
-  lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'SUPPLIED'}`);
+  
+  // Determine frame status based on selection or frame discontinued status
+  let frameStatus = 'SUPPLIED'; // default
+  if (selection.selectedFrameSource) {
+    frameStatus = selection.selectedFrameSource;
+  } else if (frame?.DISCONTINUED === 'Y') {
+    frameStatus = 'DISCONTINUED';
+  }
+  
+  lines.push(`\\FRAME STATUS:${frameStatus}`);
   lines.push('\\EYEGLASS ORDERING INFORMATION:');
   lines.push('');
   

@@ -185,6 +185,7 @@ export interface SelectionState {
   selectedEyeSize?: number;
   selectedFrameColor?: string;
   selectedFrameId?: FrameId;
+  selectedFrameSource?: 'UNCUT' | 'SUPPLIED' | 'TO COME';
   
   // Lens selection
   selectedMaterialId?: MaterialId;

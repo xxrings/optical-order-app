@@ -121,6 +121,7 @@ const mockSelection: SelectionState = {
   selectedEyeSize: 54,
   selectedFrameColor: 'Black',
   selectedFrameId: 'FRAME001',
+  selectedFrameSource: 'SUPPLIED',
   selectedMaterialId: 'MAT001',
   selectedTreatmentId: 'TREAT001',
   selectedDesignId: 'DESIGN001',
@@ -243,6 +244,23 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
     expect(result).not.toContain('\\TI1:');
     expect(result).not.toContain('\\TINT:');
+  });
+
+  test('handles different frame source options correctly', () => {
+    // Test UNCUT
+    const uncutSelection = { ...mockSelection, selectedFrameSource: 'UNCUT' as const };
+    const uncutResult = buildCprsExport({ selection: uncutSelection, catalog: mockCatalog });
+    expect(uncutResult).toContain('\\FRAME STATUS:UNCUT');
+
+    // Test TO COME
+    const toComeSelection = { ...mockSelection, selectedFrameSource: 'TO COME' as const };
+    const toComeResult = buildCprsExport({ selection: toComeSelection, catalog: mockCatalog });
+    expect(toComeResult).toContain('\\FRAME STATUS:TO COME');
+
+    // Test SUPPLIED (default)
+    const suppliedSelection = { ...mockSelection, selectedFrameSource: 'SUPPLIED' as const };
+    const suppliedResult = buildCprsExport({ selection: suppliedSelection, catalog: mockCatalog });
+    expect(suppliedResult).toContain('\\FRAME STATUS:SUPPLIED');
   });
 
   test('throws error for missing availability', () => {

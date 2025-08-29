@@ -30,6 +30,7 @@ interface UseCatalogReturn {
   updatePatientMeasurements: (measurements: any) => void;
   updateSpecialInstructions: (instructions: string[]) => void;
   updateSpecialInstructionValues: (values: Record<string, string>) => void;
+  updateFrameSource: (frameSource: 'UNCUT' | 'SUPPLIED' | 'TO COME') => void;
   rxAcknowledged: boolean;
   setRxAcknowledged: (acknowledged: boolean) => void;
   reloadCatalog: () => Promise<void>;
@@ -158,6 +159,11 @@ export const useCatalog = (): UseCatalogReturn => {
     setSelection(prev => ({ ...prev, specialInstructionValues: values }));
   }, []);
 
+  // Update frame source
+  const updateFrameSource = useCallback((frameSource: 'UNCUT' | 'SUPPLIED' | 'TO COME') => {
+    setSelection(prev => ({ ...prev, selectedFrameSource: frameSource }));
+  }, []);
+
   // Check if Rx warnings are acknowledged (used in validation logic)
   const isRxAcknowledged = rxValidation.requiresAcknowledgment ? rxAcknowledged : true;
 
@@ -193,6 +199,7 @@ export const useCatalog = (): UseCatalogReturn => {
     updatePatientMeasurements,
     updateSpecialInstructions,
     updateSpecialInstructionValues,
+    updateFrameSource,
     rxAcknowledged,
     setRxAcknowledged,
     reloadCatalog

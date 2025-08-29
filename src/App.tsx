@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCatalog } from './hooks/useCatalog';
 import FrameSelector from './components/FrameSelector';
+import { FrameSourceSelector } from './components/FrameSourceSelector';
 import LensSelector from './components/LensSelector';
 import { RxInput } from './components/RxInput';
 import { PatientMeasurementsComponent } from './components/PatientMeasurements';
@@ -25,6 +26,7 @@ function App() {
     updatePatientMeasurements,
     updateSpecialInstructions,
     updateSpecialInstructionValues,
+    updateFrameSource,
     rxAcknowledged,
     setRxAcknowledged,
     reloadCatalog
@@ -102,6 +104,15 @@ function App() {
                 onSelectionChange={updateSelection}
                 catalog={catalog}
               />
+              
+              {/* Frame Source Selection */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <FrameSourceSelector
+                  selectedFrameSource={selection.selectedFrameSource}
+                  onFrameSourceChange={updateFrameSource}
+                  disabled={!selection.selectedFrameName}
+                />
+              </div>
             </div>
 
             {/* Lens Selection */}
