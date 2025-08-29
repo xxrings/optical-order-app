@@ -153,24 +153,52 @@ export function buildCprsExport(orderData: CprsOrderData): string {
     const rightMaterial = selection.rightMaterialId ? catalog.materialsById[selection.rightMaterialId] : undefined;
     const rightTreatment = selection.rightTreatmentId ? catalog.treatmentsById[selection.rightTreatmentId] : undefined;
     const rightDesign = selection.rightDesignId ? catalog.designsById[selection.rightDesignId] : undefined;
-    const rightAvailability = findAvailabilityRow(catalog, {
-      ...selection,
-      selectedMaterialId: selection.rightMaterialId,
-      selectedTreatmentId: selection.rightTreatmentId,
-      selectedDesignId: selection.rightDesignId,
-      selectedColor: selection.rightColor
-    });
+    
+    // Find right eye availability
+    let rightAvailability = undefined;
+    if (rightMaterial && rightTreatment && rightDesign) {
+      const matchingRows = catalog.availability.filter(row => 
+        row.DESIGN_ID === selection.rightDesignId &&
+        row.MATERIAL_ID === selection.rightMaterialId &&
+        row.TREATMENT_ID === selection.rightTreatmentId
+      );
+      
+      if (matchingRows.length > 0) {
+        // Prefer exact color match, then blank color
+        const exactMatch = matchingRows.find(row => row.COLOR === selection.rightColor);
+        if (exactMatch) rightAvailability = exactMatch;
+        else {
+          const blankColorMatch = matchingRows.find(row => !row.COLOR);
+          if (blankColorMatch) rightAvailability = blankColorMatch;
+          else rightAvailability = matchingRows[0];
+        }
+      }
+    }
     
     const leftMaterial = selection.leftMaterialId ? catalog.materialsById[selection.leftMaterialId] : undefined;
     const leftTreatment = selection.leftTreatmentId ? catalog.treatmentsById[selection.leftTreatmentId] : undefined;
     const leftDesign = selection.leftDesignId ? catalog.designsById[selection.leftDesignId] : undefined;
-    const leftAvailability = findAvailabilityRow(catalog, {
-      ...selection,
-      selectedMaterialId: selection.leftMaterialId,
-      selectedTreatmentId: selection.leftTreatmentId,
-      selectedDesignId: selection.leftDesignId,
-      selectedColor: selection.leftColor
-    });
+    
+    // Find left eye availability
+    let leftAvailability = undefined;
+    if (leftMaterial && leftTreatment && leftDesign) {
+      const matchingRows = catalog.availability.filter(row => 
+        row.DESIGN_ID === selection.leftDesignId &&
+        row.MATERIAL_ID === selection.leftMaterialId &&
+        row.TREATMENT_ID === selection.leftTreatmentId
+      );
+      
+      if (matchingRows.length > 0) {
+        // Prefer exact color match, then blank color
+        const exactMatch = matchingRows.find(row => row.COLOR === selection.leftColor);
+        if (exactMatch) leftAvailability = exactMatch;
+        else {
+          const blankColorMatch = matchingRows.find(row => !row.COLOR);
+          if (blankColorMatch) leftAvailability = blankColorMatch;
+          else leftAvailability = matchingRows[0];
+        }
+      }
+    }
     
     const rightLensMaterial = formatLensMaterial(rightMaterial, rightTreatment, rightDesign, rightAvailability);
     const rightLensType = formatLensType(rightDesign, rightAvailability);

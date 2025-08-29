@@ -2,7 +2,7 @@ import React from 'react';
 import { useCatalog } from './hooks/useCatalog';
 import FrameSelector from './components/FrameSelector';
 import { FrameSourceSelector } from './components/FrameSourceSelector';
-import { SplitLensSelector } from './components/SplitLensSelector';
+import { SplitLensSelector, SplitLensOptions } from './components/SplitLensSelector';
 import LensSelector from './components/LensSelector';
 import { RxInput } from './components/RxInput';
 import { PatientMeasurementsComponent } from './components/PatientMeasurements';
@@ -125,14 +125,17 @@ function App() {
               <SplitLensSelector
                 isSplitLens={selection.isSplitLens}
                 onSplitLensChange={updateSplitLens}
-                selection={selection}
-                availableOptions={availableOptions}
-                onSelectionChange={updateSelection}
-                catalog={catalog}
                 disabled={!selection.selectedFrameName}
               />
               
-              {!selection.isSplitLens && (
+              {selection.isSplitLens ? (
+                <SplitLensOptions
+                  selection={selection}
+                  availableOptions={availableOptions}
+                  onSelectionChange={updateSelection}
+                  catalog={catalog}
+                />
+              ) : (
                 <LensSelector
                   selection={selection}
                   availableOptions={availableOptions}

@@ -75,6 +75,20 @@ export class ValidationEngine {
     errors: string[], 
     warnings: string[]
   ): void {
+    if (selection.isSplitLens) {
+      // Validate split lens selections
+      this.validateSplitLensSelection(selection, errors, warnings);
+    } else {
+      // Validate single lens selections
+      this.validateSingleLensSelection(selection, errors, warnings);
+    }
+  }
+
+  private validateSingleLensSelection(
+    selection: SelectionState, 
+    errors: string[], 
+    warnings: string[]
+  ): void {
     if (!selection.selectedMaterialId) {
       errors.push('Material is required');
       return;
@@ -200,6 +214,103 @@ export class ValidationEngine {
     }
   }
 
+  private validateSplitLensSelection(
+    selection: SelectionState, 
+    errors: string[], 
+    warnings: string[]
+  ): void {
+    // Validate right eye selections
+    if (!selection.rightMaterialId) {
+      errors.push('Right eye material is required');
+      return;
+    }
+
+    if (!selection.rightTreatmentId) {
+      errors.push('Right eye treatment is required');
+      return;
+    }
+
+    if (!selection.rightDesignId) {
+      errors.push('Right eye design is required');
+      return;
+    }
+
+    // Validate left eye selections
+    if (!selection.leftMaterialId) {
+      errors.push('Left eye material is required');
+      return;
+    }
+
+    if (!selection.leftTreatmentId) {
+      errors.push('Left eye treatment is required');
+      return;
+    }
+
+    if (!selection.leftDesignId) {
+      errors.push('Left eye design is required');
+      return;
+    }
+
+    // Validate right eye material availability
+    const rightMaterial = this.catalog.materialsById[selection.rightMaterialId];
+    if (rightMaterial && rightMaterial.AVAILABLE === 'N') {
+      errors.push('Selected right eye material is not available');
+    }
+
+    // Validate left eye material availability
+    const leftMaterial = this.catalog.materialsById[selection.leftMaterialId];
+    if (leftMaterial && leftMaterial.AVAILABLE === 'N') {
+      errors.push('Selected left eye material is not available');
+    }
+
+    // Validate right eye treatment availability
+    const rightTreatment = this.catalog.treatmentsById[selection.rightTreatmentId];
+    if (rightTreatment && rightTreatment.AVAILABLE === 'N') {
+      errors.push('Selected right eye treatment is not available');
+    }
+
+    // Validate left eye treatment availability
+    const leftTreatment = this.catalog.treatmentsById[selection.leftTreatmentId];
+    if (leftTreatment && leftTreatment.AVAILABLE === 'N') {
+      errors.push('Selected left eye treatment is not available');
+    }
+
+    // Validate right eye design availability
+    const rightDesign = this.catalog.designsById[selection.rightDesignId];
+    if (rightDesign && rightDesign.DISCONTINUED === 'Y') {
+      warnings.push('Selected right eye design is discontinued');
+    }
+
+    // Validate left eye design availability
+    const leftDesign = this.catalog.designsById[selection.leftDesignId];
+    if (leftDesign && leftDesign.DISCONTINUED === 'Y') {
+      warnings.push('Selected left eye design is discontinued');
+    }
+
+    // Validate availability combinations
+    const rightAvailability = this.catalog.availability.find(row =>
+      row.MATERIAL_ID === selection.rightMaterialId &&
+      row.TREATMENT_ID === selection.rightTreatmentId &&
+      row.DESIGN_ID === selection.rightDesignId &&
+      row.IS_AVAILABLE === 'Y'
+    );
+
+    if (!rightAvailability) {
+      errors.push('Right eye lens combination is not available');
+    }
+
+    const leftAvailability = this.catalog.availability.find(row =>
+      row.MATERIAL_ID === selection.leftMaterialId &&
+      row.TREATMENT_ID === selection.leftTreatmentId &&
+      row.DESIGN_ID === selection.leftDesignId &&
+      row.IS_AVAILABLE === 'Y'
+    );
+
+    if (!leftAvailability) {
+      errors.push('Left eye lens combination is not available');
+    }
+  }
+
   private isColorRequired(
     materialId: MaterialId, 
     treatmentId: TreatmentId, 
@@ -249,46 +360,79 @@ export class ValidationEngine {
       .filter(id => this.catalog.materialsById[id].AVAILABLE === 'Y')
       .sort();
 
-    const treatments = [...new Set(
-      this.catalog.availability
-        .filter(row => 
-          (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
-          row.IS_AVAILABLE === 'Y'
-        )
-        .map(row => row.TREATMENT_ID)
-    )].sort();
+    // For split lens, we need to handle both right and left eye selections
+    if (selection.isSplitLens) {
+      // For split lens, show all available options since each eye can have different selections
+      const treatments = [...new Set(
+        this.catalog.availability
+          .filter(row => row.IS_AVAILABLE === 'Y')
+          .map(row => row.TREATMENT_ID)
+      )].sort();
 
-    const designs = [...new Set(
-      this.catalog.availability
-        .filter(row => 
-          (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
-          (!selection.selectedTreatmentId || row.TREATMENT_ID === selection.selectedTreatmentId) &&
-          row.IS_AVAILABLE === 'Y'
-        )
-        .map(row => row.DESIGN_ID)
-    )].sort();
+      const designs = [...new Set(
+        this.catalog.availability
+          .filter(row => row.IS_AVAILABLE === 'Y')
+          .map(row => row.DESIGN_ID)
+      )].sort();
 
-    const colors = [...new Set(
-      this.catalog.availability
-        .filter(row => 
-          (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
-          (!selection.selectedTreatmentId || row.TREATMENT_ID === selection.selectedTreatmentId) &&
-          (!selection.selectedDesignId || row.DESIGN_ID === selection.selectedDesignId) &&
-          row.IS_AVAILABLE === 'Y' &&
-          row.COLOR
-        )
-        .map(row => row.COLOR!)
-    )].sort();
+      const colors = [...new Set(
+        this.catalog.availability
+          .filter(row => row.IS_AVAILABLE === 'Y' && row.COLOR)
+          .map(row => row.COLOR!)
+      )].sort();
 
-    return {
-      frameNames,
-      eyeSizes,
-      frameColors,
-      materials,
-      treatments,
-      designs,
-      colors
-    };
+      return {
+        frameNames,
+        eyeSizes,
+        frameColors,
+        materials,
+        treatments,
+        designs,
+        colors
+      };
+    } else {
+      // For single lens, use the original cascading logic
+      const treatments = [...new Set(
+        this.catalog.availability
+          .filter(row => 
+            (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
+            row.IS_AVAILABLE === 'Y'
+          )
+          .map(row => row.TREATMENT_ID)
+      )].sort();
+
+      const designs = [...new Set(
+        this.catalog.availability
+          .filter(row => 
+            (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
+            (!selection.selectedTreatmentId || row.TREATMENT_ID === selection.selectedTreatmentId) &&
+            row.IS_AVAILABLE === 'Y'
+          )
+          .map(row => row.DESIGN_ID)
+      )].sort();
+
+      const colors = [...new Set(
+        this.catalog.availability
+          .filter(row => 
+            (!selection.selectedMaterialId || row.MATERIAL_ID === selection.selectedMaterialId) &&
+            (!selection.selectedTreatmentId || row.TREATMENT_ID === selection.selectedTreatmentId) &&
+            (!selection.selectedDesignId || row.DESIGN_ID === selection.selectedDesignId) &&
+            row.IS_AVAILABLE === 'Y' &&
+            row.COLOR
+          )
+          .map(row => row.COLOR!)
+      )].sort();
+
+      return {
+        frameNames,
+        eyeSizes,
+        frameColors,
+        materials,
+        treatments,
+        designs,
+        colors
+      };
+    }
   }
 
   private validateSpecialInstructions(
