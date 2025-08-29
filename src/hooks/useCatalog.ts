@@ -31,6 +31,7 @@ interface UseCatalogReturn {
   updateSpecialInstructions: (instructions: string[]) => void;
   updateSpecialInstructionValues: (values: Record<string, string>) => void;
   updateFrameSource: (frameSource: 'UNCUT' | 'SUPPLIED' | 'TO COME') => void;
+  updateSplitLens: (isSplit: boolean) => void;
   rxAcknowledged: boolean;
   setRxAcknowledged: (acknowledged: boolean) => void;
   reloadCatalog: () => Promise<void>;
@@ -164,6 +165,27 @@ export const useCatalog = (): UseCatalogReturn => {
     setSelection(prev => ({ ...prev, selectedFrameSource: frameSource }));
   }, []);
 
+  // Update split lens selection
+  const updateSplitLens = useCallback((isSplit: boolean) => {
+    setSelection(prev => ({ 
+      ...prev, 
+      isSplitLens: isSplit,
+      // Clear lens selections when switching modes
+      selectedMaterialId: undefined,
+      selectedTreatmentId: undefined,
+      selectedDesignId: undefined,
+      selectedColor: undefined,
+      rightMaterialId: undefined,
+      rightTreatmentId: undefined,
+      rightDesignId: undefined,
+      rightColor: undefined,
+      leftMaterialId: undefined,
+      leftTreatmentId: undefined,
+      leftDesignId: undefined,
+      leftColor: undefined
+    }));
+  }, []);
+
   // Check if Rx warnings are acknowledged (used in validation logic)
   const isRxAcknowledged = rxValidation.requiresAcknowledgment ? rxAcknowledged : true;
 
@@ -200,6 +222,7 @@ export const useCatalog = (): UseCatalogReturn => {
     updateSpecialInstructions,
     updateSpecialInstructionValues,
     updateFrameSource,
+    updateSplitLens,
     rxAcknowledged,
     setRxAcknowledged,
     reloadCatalog

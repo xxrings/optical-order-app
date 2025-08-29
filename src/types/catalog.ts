@@ -187,11 +187,24 @@ export interface SelectionState {
   selectedFrameId?: FrameId;
   selectedFrameSource?: 'UNCUT' | 'SUPPLIED' | 'TO COME';
   
-  // Lens selection
+  // Lens selection type
+  isSplitLens?: boolean;
+  
+  // Single lens selection (when not split)
   selectedMaterialId?: MaterialId;
   selectedTreatmentId?: TreatmentId;
   selectedDesignId?: DesignId;
   selectedColor?: string;
+  
+  // Split lens selection (when split)
+  rightMaterialId?: MaterialId;
+  rightTreatmentId?: TreatmentId;
+  rightDesignId?: DesignId;
+  rightColor?: string;
+  leftMaterialId?: MaterialId;
+  leftTreatmentId?: TreatmentId;
+  leftDesignId?: DesignId;
+  leftColor?: string;
   
   // Rx data
   rxData?: RxData;

@@ -142,26 +142,69 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   lines.push('');
   
   // RX section
-  const rxEye = getRxEyeText(selection.rxData);
+  const rxEye = getRxEyeText(selection.rxData, selection.isSplitLens);
   const rxCode = getRxCode(rxEye);
   lines.push(`\\RX_EYE:${rxEye} \\RX:${rxCode}`);
   lines.push('');
   
-  // Lens section - match gold format exactly
-  const lensMaterial = formatLensMaterial(material, treatment, design, availability);
-  const lensType = formatLensType(design, availability);
-  const segType = formatSegType(design, design);
-  
-  lines.push(`\\LENS MATERIAL:${lensMaterial}`);
-  lines.push(`\\LENS TYPE:${lensType}`);
-  lines.push(`\\SEG TYPE:${segType}`);
-  lines.push('');
-  
-  // Lens1 section (always present, may be blank)
-  lines.push('\\LENS MATERIAL1:');
-  lines.push('\\LENS TYPE1:');
-  lines.push('\\SEG TYPE1:');
-  lines.push('');
+  // Lens section - handle split vs single lens
+  if (selection.isSplitLens) {
+    // Split lens - use right eye for main lens, left eye for lens1
+    const rightMaterial = selection.rightMaterialId ? catalog.materialsById[selection.rightMaterialId] : undefined;
+    const rightTreatment = selection.rightTreatmentId ? catalog.treatmentsById[selection.rightTreatmentId] : undefined;
+    const rightDesign = selection.rightDesignId ? catalog.designsById[selection.rightDesignId] : undefined;
+    const rightAvailability = findAvailabilityRow(catalog, {
+      ...selection,
+      selectedMaterialId: selection.rightMaterialId,
+      selectedTreatmentId: selection.rightTreatmentId,
+      selectedDesignId: selection.rightDesignId,
+      selectedColor: selection.rightColor
+    });
+    
+    const leftMaterial = selection.leftMaterialId ? catalog.materialsById[selection.leftMaterialId] : undefined;
+    const leftTreatment = selection.leftTreatmentId ? catalog.treatmentsById[selection.leftTreatmentId] : undefined;
+    const leftDesign = selection.leftDesignId ? catalog.designsById[selection.leftDesignId] : undefined;
+    const leftAvailability = findAvailabilityRow(catalog, {
+      ...selection,
+      selectedMaterialId: selection.leftMaterialId,
+      selectedTreatmentId: selection.leftTreatmentId,
+      selectedDesignId: selection.leftDesignId,
+      selectedColor: selection.leftColor
+    });
+    
+    const rightLensMaterial = formatLensMaterial(rightMaterial, rightTreatment, rightDesign, rightAvailability);
+    const rightLensType = formatLensType(rightDesign, rightAvailability);
+    const rightSegType = formatSegType(rightDesign, rightDesign);
+    
+    const leftLensMaterial = formatLensMaterial(leftMaterial, leftTreatment, leftDesign, leftAvailability);
+    const leftLensType = formatLensType(leftDesign, leftAvailability);
+    const leftSegType = formatSegType(leftDesign, leftDesign);
+    
+    lines.push(`\\LENS MATERIAL:${rightLensMaterial}`);
+    lines.push(`\\LENS TYPE:${rightLensType}`);
+    lines.push(`\\SEG TYPE:${rightSegType}`);
+    lines.push('');
+    lines.push(`\\LENS MATERIAL1:${leftLensMaterial}`);
+    lines.push(`\\LENS TYPE1:${leftLensType}`);
+    lines.push(`\\SEG TYPE1:${leftSegType}`);
+    lines.push('');
+  } else {
+    // Single lens - match gold format exactly
+    const lensMaterial = formatLensMaterial(material, treatment, design, availability);
+    const lensType = formatLensType(design, availability);
+    const segType = formatSegType(design, design);
+    
+    lines.push(`\\LENS MATERIAL:${lensMaterial}`);
+    lines.push(`\\LENS TYPE:${lensType}`);
+    lines.push(`\\SEG TYPE:${segType}`);
+    lines.push('');
+    
+    // Lens1 section (always present, may be blank)
+    lines.push('\\LENS MATERIAL1:');
+    lines.push('\\LENS TYPE1:');
+    lines.push('\\SEG TYPE1:');
+    lines.push('');
+  }
   
   // Spectacle RX section
   lines.push('\\SPECTACLE RX:');
@@ -218,8 +261,11 @@ function findAvailabilityRow(catalog: Catalog, selection: SelectionState) {
   return matchingRows[0];
 }
 
-function getRxEyeText(rxData?: RxData): string {
+function getRxEyeText(rxData?: RxData, isSplitLens?: boolean): string {
   if (!rxData) return '';
+  
+  // If split lens is selected, always return SPLIT
+  if (isSplitLens) return 'SPLIT';
   
   const hasRightEye = rxData.rightSphere !== undefined || rxData.rightCylinder !== undefined;
   const hasLeftEye = rxData.leftSphere !== undefined || rxData.leftCylinder !== undefined;

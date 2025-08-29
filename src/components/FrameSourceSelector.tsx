@@ -22,9 +22,9 @@ export const FrameSourceSelector: React.FC<FrameSourceSelectorProps> = ({
       <label className="block text-sm font-medium text-gray-700 mb-2">
         Frame Source
       </label>
-      <div className="space-y-2">
+      <div className="flex space-x-6">
         {frameSourceOptions.map((option) => (
-          <label key={option.value} className="flex items-center space-x-3 cursor-pointer">
+          <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
             <input
               type="radio"
               name="frameSource"
@@ -34,10 +34,7 @@ export const FrameSourceSelector: React.FC<FrameSourceSelectorProps> = ({
               disabled={disabled}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
             />
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-900">{option.label}</span>
-              <span className="text-xs text-gray-500">{option.description}</span>
-            </div>
+            <span className="text-sm font-medium text-gray-900">{option.label}</span>
           </label>
         ))}
       </div>

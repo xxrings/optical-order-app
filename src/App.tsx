@@ -2,6 +2,7 @@ import React from 'react';
 import { useCatalog } from './hooks/useCatalog';
 import FrameSelector from './components/FrameSelector';
 import { FrameSourceSelector } from './components/FrameSourceSelector';
+import { SplitLensSelector } from './components/SplitLensSelector';
 import LensSelector from './components/LensSelector';
 import { RxInput } from './components/RxInput';
 import { PatientMeasurementsComponent } from './components/PatientMeasurements';
@@ -27,6 +28,7 @@ function App() {
     updateSpecialInstructions,
     updateSpecialInstructionValues,
     updateFrameSource,
+    updateSplitLens,
     rxAcknowledged,
     setRxAcknowledged,
     reloadCatalog
@@ -120,12 +122,24 @@ function App() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Lens Selection
               </h2>
-              <LensSelector
+              <SplitLensSelector
+                isSplitLens={selection.isSplitLens}
+                onSplitLensChange={updateSplitLens}
                 selection={selection}
                 availableOptions={availableOptions}
                 onSelectionChange={updateSelection}
                 catalog={catalog}
+                disabled={!selection.selectedFrameName}
               />
+              
+              {!selection.isSplitLens && (
+                <LensSelector
+                  selection={selection}
+                  availableOptions={availableOptions}
+                  onSelectionChange={updateSelection}
+                  catalog={catalog}
+                />
+              )}
             </div>
 
                                {/* Rx Input */}

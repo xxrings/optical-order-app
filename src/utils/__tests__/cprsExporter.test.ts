@@ -263,6 +263,28 @@ describe('CPRS Exporter', () => {
     expect(suppliedResult).toContain('\\FRAME STATUS:SUPPLIED');
   });
 
+  test('handles split lens selection correctly', () => {
+    const splitSelection = {
+      ...mockSelection,
+      isSplitLens: true,
+      rightMaterialId: 'MAT001',
+      rightTreatmentId: 'TREAT001',
+      rightDesignId: 'DESIGN001',
+      leftMaterialId: 'MAT001',
+      leftTreatmentId: 'TREAT001',
+      leftDesignId: 'DESIGN001'
+    };
+    
+    const result = buildCprsExport({ selection: splitSelection, catalog: mockCatalog });
+    
+    // Should show SPLIT in RX_EYE
+    expect(result).toContain('\\RX_EYE:SPLIT \\RX:4');
+    
+    // Should populate both LENS MATERIAL and LENS MATERIAL1
+    expect(result).toContain('\\LENS MATERIAL:CR39 CLEAR CLEAR SV DISTANCE \\CD:0 \\LC:1 \\LMD:CLEAR');
+    expect(result).toContain('\\LENS MATERIAL1:CR39 CLEAR CLEAR SV DISTANCE \\CD:0 \\LC:1 \\LMD:CLEAR');
+  });
+
   test('throws error for missing availability', () => {
     const catalogWithoutAvailability = {
       ...mockCatalog,
