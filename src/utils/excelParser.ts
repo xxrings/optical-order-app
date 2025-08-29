@@ -58,19 +58,23 @@ export class ExcelParser {
 
     const frames = this.parseSheet<FrameRow>('Frames');
     
-    // Debug: Show frame data to check for SKU column
-    console.log('Frame parsing debug:', {
-      frameCount: frames.length,
-      firstFrame: frames[0],
-      frameHeaders: frames.length > 0 ? Object.keys(frames[0]) : [],
-      sampleFrames: frames.slice(0, 3).map(f => ({
-        FRAME_ID: f.FRAME_ID,
-        NAME: f.NAME,
-        EYE_SIZE: f.EYE_SIZE,
-        COLOR: f.COLOR,
-        SKU: f.SKU
-      }))
-    });
+         // Debug: Show frame data to check for SKU column
+     console.log('Frame parsing debug:', {
+       frameCount: frames.length,
+       firstFrame: frames[0],
+       frameHeaders: frames.length > 0 ? Object.keys(frames[0]) : [],
+       sampleFrames: frames.slice(0, 3).map(f => ({
+         FRAME_ID: f.FRAME_ID,
+         NAME: f.NAME,
+         EYE_SIZE: f.EYE_SIZE,
+         COLOR: f.COLOR,
+         SKU: f.SKU
+       }))
+     });
+     
+     // Log sheet names and SKU count
+     console.log("CATALOG sheets", Object.keys(this.workbook!.Sheets));
+     console.log("Frames with non-empty SKU", frames.filter(r => String(r.SKU||"").trim() !== "").length);
     const tints = this.parseSheet<TintRow>('Tints');
     const fresnelOptions = this.parseSheet<FresnelOptionRow>('FresnelOptions');
     const instructionCodes = this.parseSheet<InstructionCodeRow>('InstructionCodes');

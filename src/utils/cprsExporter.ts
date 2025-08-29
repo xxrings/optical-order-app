@@ -9,14 +9,46 @@ export interface CprsOrderData {
 export function buildCprsExport(orderData: CprsOrderData): string {
   const { selection, catalog } = orderData;
   
-  // Resolve all the data we need
-  const frame = selection.selectedFrameName && selection.selectedEyeSize && selection.selectedFrameColor 
-    ? catalog.frames.find(f => 
-        f.NAME === selection.selectedFrameName &&
-        f.EYE_SIZE === selection.selectedEyeSize &&
-        f.COLOR === selection.selectedFrameColor
-      )
-    : undefined;
+  // Helper functions for frame matching
+  const normFrameName = (s: string) =>
+    (s ?? "").toUpperCase().replace(/\s+/g, "");
+  const normColor = (s: string) =>
+    (s ?? "").toUpperCase().replace(/\s+/g, " ").trim();
+  const toInt = (v: any) => {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) ? n : null;
+  };
+
+  // Build frames index for SKU lookup
+  const framesIndex = new Map<string, {SKU?: string}>();
+  for (const r of catalog.frames) {
+    const key = `${normFrameName(r.NAME)}|${toInt(r.EYE_SIZE)}|${normColor(r.COLOR)}`;
+    framesIndex.set(key, { SKU: r.SKU ?? "" });
+  }
+
+  // Look up frame using normalized keys
+  const frameKey = selection.selectedFrameName && selection.selectedEyeSize && selection.selectedFrameColor 
+    ? `${normFrameName(selection.selectedFrameName)}|${toInt(selection.selectedEyeSize)}|${normColor(selection.selectedFrameColor)}`
+    : null;
+  
+  const frame = frameKey ? catalog.frames.find(f => 
+    normFrameName(f.NAME) === normFrameName(selection.selectedFrameName!) &&
+    toInt(f.EYE_SIZE) === toInt(selection.selectedEyeSize!) &&
+    normColor(f.COLOR) === normColor(selection.selectedFrameColor!)
+  ) : undefined;
+  
+  // Get SKU from frames index
+  const sku = frameKey ? framesIndex.get(frameKey)?.SKU ?? "" : "";
+  
+  // Fail-fast logging for SKU lookup misses
+  if (frameKey && !framesIndex.has(frameKey)) {
+    console.warn("CPRS SKU lookup miss", { 
+      key: frameKey, 
+      frameName: selection.selectedFrameName, 
+      eyeSize: selection.selectedEyeSize, 
+      color: selection.selectedFrameColor 
+    });
+  }
     
   // Debug: Log frame lookup
   console.log('CPRS frame lookup debug:', {
@@ -48,11 +80,10 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   lines.push('\\DELIVERY:');
   lines.push('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
   
-  // Format frame header with exact spacing from gold
-  const frNoSpace = frame?.NAME ? frame.NAME.replace(/\s+/g, '') : '';
-  const szInt = frame?.EYE_SIZE ? Math.round(Number(frame.EYE_SIZE)) : '';
-  const colUpper = frame?.COLOR ? String(frame.COLOR).toUpperCase() : '';
-  const sku = frame?.SKU ? String(frame.SKU) : '';
+  // Format frame header with exact spacing from gold using normalized values
+  const frNoSpace = selection.selectedFrameName ? normFrameName(selection.selectedFrameName) : '';
+  const szInt = selection.selectedEyeSize ? toInt(selection.selectedEyeSize) : '';
+  const colUpper = selection.selectedFrameColor ? normColor(selection.selectedFrameColor) : '';
   
   // Use exact spacing from gold template
   lines.push(`\\fr:${frNoSpace}       \\sz:${String(szInt)}      \\col:${colUpper}              \\sku:${sku}`);
@@ -376,40 +407,70 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
   const selectedInstructions = selection.specialInstructions || [];
   const selectedValues = selection.specialInstructionValues || {};
   
-  if (selectedInstructions.length === 0) {
-    // Just the header, no additional content
-    lines.push('\\SPECIAL INSTRUCTIONS:');
-    return lines;
+  // Build TI items in the correct order
+  const tiItems: string[] = [];
+  
+  // Map UI selections to TI items using InstructionCodes sheet
+  // ARMAR_AR → \TI:ARMAR AR \SI:ARC (always ARC)
+  if (selectedInstructions.includes('ARMAR_AR')) {
+    tiItems.push(`\\TI:ARMAR AR \\SI:ARC`);
   }
   
-  // Build inline summary with comma+space separation
-  const summaryParts: string[] = [];
+  // RUSH → \TI10:RUSH
+  if (selectedInstructions.includes('RUSH')) {
+    tiItems.push(`\\TI10:RUSH`);
+  }
   
-  // Process instructions in TI order (TI1-TI13)
-  for (let i = 1; i <= 13; i++) {
+  // SLAB_LENS → \TI4:SLAB LENS \SI4:90
+  if (selectedInstructions.includes('SLAB_LENS')) {
+    tiItems.push(`\\TI4:SLAB LENS \\SI4:90`);
+  }
+  
+  // ROLL_POLISH → \TI5:ROLL AND POLISH \SI5:POL
+  if (selectedInstructions.includes('ROLL_POLISH')) {
+    tiItems.push(`\\TI5:ROLL AND POLISH \\SI5:POL`);
+  }
+  
+  // SOLID_TINT → \TI1:SOLID TINT \SI1:{value}
+  if (selectedInstructions.includes('SOLID_TINT')) {
+    const tintValue = selectedValues['SOLID_TINT'] || '';
+    tiItems.push(`\\TI1:SOLID TINT \\SI1:${tintValue}`);
+  }
+  
+  // GRADIENT_TINT → \TI2:GRADIENT TINT \SI2:{value}
+  if (selectedInstructions.includes('GRADIENT_TINT')) {
+    const tintValue = selectedValues['GRADIENT_TINT'] || '';
+    tiItems.push(`\\TI2:GRADIENT TINT \\SI2:${tintValue}`);
+  }
+  
+  // FRESNEL_PRISM → \TI13:FRESNEL PRISM \SI13:{value}
+  if (selectedInstructions.includes('FRESNEL_PRISM')) {
+    const prismValue = selectedValues['FRESNEL_PRISM'] || '';
+    tiItems.push(`\\TI13:FRESNEL PRISM \\SI13:${prismValue}`);
+  }
+  
+  // Add other TI items in numeric order (TI6-TI12) as needed
+  for (let i = 6; i <= 12; i++) {
     const tiCode = `TI${i}`;
     if (selectedInstructions.includes(tiCode)) {
       const instruction = catalog.instructionCodes.find(ic => ic.CODE === tiCode);
       if (instruction) {
-        let part = `\\TI${i === 1 ? '' : i}:${instruction.LABEL}`;
+        let part = `\\TI${i}:${instruction.LABEL}`;
         
         // Add SI token if present
         if (instruction.OUTPUT_TEMPLATE) {
           const siValue = selectedValues[tiCode] || '';
-          part += ` \\SI${i === 1 ? '' : i}:${siValue}`;
+          part += ` \\SI${i}:${siValue}`;
         }
         
-        summaryParts.push(part);
+        tiItems.push(part);
       }
     }
   }
   
-  // Create the inline header with summary
-  const headerLine = summaryParts.length > 0 
-    ? `\\SPECIAL INSTRUCTIONS:${summaryParts.join(', ')}`
-    : '\\SPECIAL INSTRUCTIONS:';
-  
-  lines.push(headerLine);
+  // Create the inline header with summary (no extra newline after colon)
+  const siLine = `\\SPECIAL INSTRUCTIONS:${tiItems.length ? tiItems.join(", ") : ""}`;
+  lines.push(siLine);
   
   return lines;
 }
