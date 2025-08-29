@@ -157,7 +157,10 @@ function App() {
                     <PatientMeasurementsComponent
                       measurements={selection.patientMeasurements}
                       onMeasurementsChange={updatePatientMeasurements}
-                      selectedDesign={catalog?.designsById[selection.selectedDesignId || '']}
+                      selectedDesign={selection.isSplitLens 
+                        ? catalog?.designsById[selection.rightDesignId || ''] // Use right eye design for split lens
+                        : catalog?.designsById[selection.selectedDesignId || '']
+                      }
                     />
 
                                        {/* Special Instructions */}

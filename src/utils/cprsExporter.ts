@@ -147,6 +147,11 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   lines.push(`\\RX_EYE:${rxEye} \\RX:${rxCode}`);
   lines.push('');
   
+  // Get the appropriate design for measurements (right eye design for split lens, single design otherwise)
+  const measurementDesign = selection.isSplitLens 
+    ? (selection.rightDesignId ? catalog.designsById[selection.rightDesignId] : undefined)
+    : design;
+  
   // Lens section - handle split vs single lens
   if (selection.isSplitLens) {
     // Split lens - use right eye for main lens, left eye for lens1
@@ -154,13 +159,16 @@ export function buildCprsExport(orderData: CprsOrderData): string {
     const rightTreatment = selection.rightTreatmentId ? catalog.treatmentsById[selection.rightTreatmentId] : undefined;
     const rightDesign = selection.rightDesignId ? catalog.designsById[selection.rightDesignId] : undefined;
     
+
+    
     // Find right eye availability
     let rightAvailability = undefined;
     if (rightMaterial && rightTreatment && rightDesign) {
       const matchingRows = catalog.availability.filter(row => 
         row.DESIGN_ID === selection.rightDesignId &&
         row.MATERIAL_ID === selection.rightMaterialId &&
-        row.TREATMENT_ID === selection.rightTreatmentId
+        row.TREATMENT_ID === selection.rightTreatmentId &&
+        row.IS_AVAILABLE === 'Y'
       );
       
       if (matchingRows.length > 0) {
@@ -185,7 +193,8 @@ export function buildCprsExport(orderData: CprsOrderData): string {
       const matchingRows = catalog.availability.filter(row => 
         row.DESIGN_ID === selection.leftDesignId &&
         row.MATERIAL_ID === selection.leftMaterialId &&
-        row.TREATMENT_ID === selection.leftTreatmentId
+        row.TREATMENT_ID === selection.leftTreatmentId &&
+        row.IS_AVAILABLE === 'Y'
       );
       
       if (matchingRows.length > 0) {
@@ -207,6 +216,8 @@ export function buildCprsExport(orderData: CprsOrderData): string {
     const leftLensMaterial = formatLensMaterial(leftMaterial, leftTreatment, leftDesign, leftAvailability);
     const leftLensType = formatLensType(leftDesign, leftAvailability);
     const leftSegType = formatSegType(leftDesign, leftDesign);
+    
+
     
     lines.push(`\\LENS MATERIAL:${rightLensMaterial}`);
     lines.push(`\\LENS TYPE:${rightLensType}`);
@@ -242,13 +253,13 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   
   // Segment height section
   lines.push('\\SEGMENT HGT:');
-  const segHeightLines = formatSegmentHeight(selection.patientMeasurements, design);
+  const segHeightLines = formatSegmentHeight(selection.patientMeasurements, measurementDesign);
   lines.push(...segHeightLines);
   lines.push('');
   
   // Pupillary distance section
   lines.push('\\PUPILLARY DISTANCE:');
-  const pdLines = formatPupillaryDistance(selection.patientMeasurements, design);
+  const pdLines = formatPupillaryDistance(selection.patientMeasurements, measurementDesign);
   lines.push(...pdLines);
   lines.push('');
   
@@ -271,7 +282,8 @@ function findAvailabilityRow(catalog: Catalog, selection: SelectionState) {
   const matchingRows = catalog.availability.filter(row => 
     row.DESIGN_ID === selectedDesignId &&
     row.MATERIAL_ID === selectedMaterialId &&
-    row.TREATMENT_ID === selectedTreatmentId
+    row.TREATMENT_ID === selectedTreatmentId &&
+    row.IS_AVAILABLE === 'Y'
   );
   
   if (matchingRows.length === 0) {

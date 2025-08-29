@@ -14,6 +14,8 @@ export class ValidationEngine {
     const errors: string[] = [];
     const warnings: string[] = [];
 
+    console.log('DEBUG: validateSelection called with isSplitLens:', selection.isSplitLens);
+
     // Validate frame selection
     this.validateFrameSelection(selection, errors, warnings);
 
@@ -25,6 +27,8 @@ export class ValidationEngine {
 
     // Validate special instructions
     this.validateSpecialInstructions(selection, errors, warnings);
+
+    console.log('DEBUG: validateSelection completed with errors:', errors, 'isValid:', errors.length === 0);
 
     return {
       isValid: errors.length === 0,
@@ -134,6 +138,24 @@ export class ValidationEngine {
     errors: string[], 
     warnings: string[]
   ): void {
+    console.log('DEBUG: validateCombinations called with isSplitLens:', selection.isSplitLens);
+    
+    if (selection.isSplitLens) {
+      // Validate split lens combinations
+      console.log('DEBUG: Calling validateSplitLensCombinations');
+      this.validateSplitLensCombinations(selection, errors, warnings);
+    } else {
+      // Validate single lens combinations
+      console.log('DEBUG: Calling validateSingleLensCombinations');
+      this.validateSingleLensCombinations(selection, errors, warnings);
+    }
+  }
+
+  private validateSingleLensCombinations(
+    selection: SelectionState, 
+    errors: string[], 
+    warnings: string[]
+  ): void {
     if (!selection.selectedMaterialId || !selection.selectedTreatmentId || !selection.selectedDesignId) {
       return;
     }
@@ -157,6 +179,83 @@ export class ValidationEngine {
 
     // Check minimum segment height
     this.validateSegmentHeight(selection, availability, warnings);
+  }
+
+  private validateSplitLensCombinations(
+    selection: SelectionState, 
+    errors: string[], 
+    warnings: string[]
+  ): void {
+    console.log('DEBUG: validateSplitLensCombinations called with:', {
+      rightMaterialId: selection.rightMaterialId,
+      rightTreatmentId: selection.rightTreatmentId,
+      rightDesignId: selection.rightDesignId,
+      leftMaterialId: selection.leftMaterialId,
+      leftTreatmentId: selection.leftTreatmentId,
+      leftDesignId: selection.leftDesignId
+    });
+
+    // Validate right eye combination
+    if (selection.rightMaterialId && selection.rightTreatmentId && selection.rightDesignId) {
+      const rightAvailability = this.catalog.availability.find(row =>
+        row.MATERIAL_ID === selection.rightMaterialId &&
+        row.TREATMENT_ID === selection.rightTreatmentId &&
+        row.DESIGN_ID === selection.rightDesignId &&
+        (selection.rightColor ? row.COLOR === selection.rightColor : !row.COLOR) &&
+        row.IS_AVAILABLE === 'Y'
+      );
+
+      console.log('DEBUG: Right eye availability search:', {
+        materialId: selection.rightMaterialId,
+        treatmentId: selection.rightTreatmentId,
+        designId: selection.rightDesignId,
+        color: selection.rightColor,
+        found: !!rightAvailability,
+        totalAvailabilityRows: this.catalog.availability.length
+      });
+
+      if (!rightAvailability) {
+        errors.push('Right eye lens combination is not available');
+      } else {
+        // Check rimless compatibility for right eye
+        this.validateRimlessCompatibilityForEye(selection, rightAvailability, 'right', errors, warnings);
+        
+        // Check minimum segment height for right eye
+        this.validateSegmentHeightForEye(selection, rightAvailability, 'right', warnings);
+      }
+    }
+
+    // Validate left eye combination
+    if (selection.leftMaterialId && selection.leftTreatmentId && selection.leftDesignId) {
+      const leftAvailability = this.catalog.availability.find(row =>
+        row.MATERIAL_ID === selection.leftMaterialId &&
+        row.TREATMENT_ID === selection.leftTreatmentId &&
+        row.DESIGN_ID === selection.leftDesignId &&
+        (selection.leftColor ? row.COLOR === selection.leftColor : !row.COLOR) &&
+        row.IS_AVAILABLE === 'Y'
+      );
+
+      console.log('DEBUG: Left eye availability search:', {
+        materialId: selection.leftMaterialId,
+        treatmentId: selection.leftTreatmentId,
+        designId: selection.leftDesignId,
+        color: selection.leftColor,
+        found: !!leftAvailability,
+        totalAvailabilityRows: this.catalog.availability.length
+      });
+
+      if (!leftAvailability) {
+        errors.push('Left eye lens combination is not available');
+      } else {
+        // Check rimless compatibility for left eye
+        this.validateRimlessCompatibilityForEye(selection, leftAvailability, 'left', errors, warnings);
+        
+        // Check minimum segment height for left eye
+        this.validateSegmentHeightForEye(selection, leftAvailability, 'left', warnings);
+      }
+    }
+
+    console.log('DEBUG: validateSplitLensCombinations completed with errors:', errors);
   }
 
   private validateRimlessCompatibility(
@@ -191,6 +290,38 @@ export class ValidationEngine {
     }
   }
 
+  private validateRimlessCompatibilityForEye(
+    selection: SelectionState,
+    availability: any,
+    eye: 'right' | 'left',
+    errors: string[],
+    warnings: string[]
+  ): void {
+    // Check if frame is rimless (this would need to be determined from frame specs)
+    // For now, we'll assume non-rimless unless we have specific logic
+    const isRimless = false; // TODO: Implement rimless detection logic
+
+    if (isRimless) {
+      const materialId = eye === 'right' ? selection.rightMaterialId : selection.leftMaterialId;
+      const treatmentId = eye === 'right' ? selection.rightTreatmentId : selection.leftTreatmentId;
+      
+      const material = materialId ? this.catalog.materialsById[materialId] : undefined;
+      const treatment = treatmentId ? this.catalog.treatmentsById[treatmentId] : undefined;
+
+      if (material && material.RIMLESS_ALLOWED === 'N') {
+        errors.push(`Selected ${eye} eye material is not compatible with rimless frames`);
+      }
+
+      if (treatment && treatment.RIMLESS_ALLOWED === 'N') {
+        errors.push(`Selected ${eye} eye treatment is not compatible with rimless frames`);
+      }
+
+      if (availability.RIMLESS_ALLOWED === 'N') {
+        errors.push(`Selected ${eye} eye combination is not compatible with rimless frames`);
+      }
+    }
+  }
+
   private validateSegmentHeight(
     selection: SelectionState,
     availability: any,
@@ -210,6 +341,31 @@ export class ValidationEngine {
       
       if (actualSegHeight < minSegHeight) {
         warnings.push(`Minimum segment height should be ${minSegHeight}mm for this design`);
+      }
+    }
+  }
+
+  private validateSegmentHeightForEye(
+    selection: SelectionState,
+    availability: any,
+    eye: 'right' | 'left',
+    warnings: string[]
+  ): void {
+    const designId = eye === 'right' ? selection.rightDesignId : selection.leftDesignId;
+    const design = designId ? this.catalog.designsById[designId] : undefined;
+    if (!design) return;
+
+    const minSegHeight = Math.max(
+      design.MIN_SEG_HEIGHT_MM,
+      availability.MIN_SEG_HEIGHT_MM || 0
+    );
+
+    if (minSegHeight > 0) {
+      // TODO: Get actual segment height from frame specs or user input
+      const actualSegHeight = 0; // Placeholder
+      
+      if (actualSegHeight < minSegHeight) {
+        warnings.push(`Minimum segment height should be ${minSegHeight}mm for ${eye} eye design`);
       }
     }
   }
@@ -263,17 +419,8 @@ export class ValidationEngine {
       errors.push('Selected left eye material is not available');
     }
 
-    // Validate right eye treatment availability
-    const rightTreatment = this.catalog.treatmentsById[selection.rightTreatmentId];
-    if (rightTreatment && rightTreatment.AVAILABLE === 'N') {
-      errors.push('Selected right eye treatment is not available');
-    }
-
-    // Validate left eye treatment availability
-    const leftTreatment = this.catalog.treatmentsById[selection.leftTreatmentId];
-    if (leftTreatment && leftTreatment.AVAILABLE === 'N') {
-      errors.push('Selected left eye treatment is not available');
-    }
+             // Note: Treatment availability is determined by the Availability sheet,
+         // which is already checked in the availability combinations below
 
     // Validate right eye design availability
     const rightDesign = this.catalog.designsById[selection.rightDesignId];
@@ -360,37 +507,88 @@ export class ValidationEngine {
       .filter(id => this.catalog.materialsById[id].AVAILABLE === 'Y')
       .sort();
 
-    // For split lens, we need to handle both right and left eye selections
-    if (selection.isSplitLens) {
-      // For split lens, show all available options since each eye can have different selections
-      const treatments = [...new Set(
-        this.catalog.availability
-          .filter(row => row.IS_AVAILABLE === 'Y')
-          .map(row => row.TREATMENT_ID)
-      )].sort();
+         // For split lens, we need to handle both right and left eye selections
+     if (selection.isSplitLens) {
+       // For split lens, use cascading logic for each eye independently
+       // Right eye cascading
+       const rightTreatments = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.rightMaterialId || row.MATERIAL_ID === selection.rightMaterialId) &&
+             row.IS_AVAILABLE === 'Y'
+           )
+           .map(row => row.TREATMENT_ID)
+       )].sort();
 
-      const designs = [...new Set(
-        this.catalog.availability
-          .filter(row => row.IS_AVAILABLE === 'Y')
-          .map(row => row.DESIGN_ID)
-      )].sort();
+       const rightDesigns = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.rightMaterialId || row.MATERIAL_ID === selection.rightMaterialId) &&
+             (!selection.rightTreatmentId || row.TREATMENT_ID === selection.rightTreatmentId) &&
+             row.IS_AVAILABLE === 'Y'
+           )
+           .map(row => row.DESIGN_ID)
+       )].sort();
 
-      const colors = [...new Set(
-        this.catalog.availability
-          .filter(row => row.IS_AVAILABLE === 'Y' && row.COLOR)
-          .map(row => row.COLOR!)
-      )].sort();
+       const rightColors = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.rightMaterialId || row.MATERIAL_ID === selection.rightMaterialId) &&
+             (!selection.rightTreatmentId || row.TREATMENT_ID === selection.rightTreatmentId) &&
+             (!selection.rightDesignId || row.DESIGN_ID === selection.rightDesignId) &&
+             row.IS_AVAILABLE === 'Y' &&
+             row.COLOR
+           )
+           .map(row => row.COLOR!)
+       )].sort();
 
-      return {
-        frameNames,
-        eyeSizes,
-        frameColors,
-        materials,
-        treatments,
-        designs,
-        colors
-      };
-    } else {
+       // Left eye cascading
+       const leftTreatments = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.leftMaterialId || row.MATERIAL_ID === selection.leftMaterialId) &&
+             row.IS_AVAILABLE === 'Y'
+           )
+           .map(row => row.TREATMENT_ID)
+       )].sort();
+
+       const leftDesigns = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.leftMaterialId || row.MATERIAL_ID === selection.leftMaterialId) &&
+             (!selection.leftTreatmentId || row.TREATMENT_ID === selection.leftTreatmentId) &&
+             row.IS_AVAILABLE === 'Y'
+           )
+           .map(row => row.DESIGN_ID)
+       )].sort();
+
+       const leftColors = [...new Set(
+         this.catalog.availability
+           .filter(row => 
+             (!selection.leftMaterialId || row.MATERIAL_ID === selection.leftMaterialId) &&
+             (!selection.leftTreatmentId || row.TREATMENT_ID === selection.leftTreatmentId) &&
+             (!selection.leftDesignId || row.DESIGN_ID === selection.leftDesignId) &&
+             row.IS_AVAILABLE === 'Y' &&
+             row.COLOR
+           )
+           .map(row => row.COLOR!)
+       )].sort();
+
+       // Combine all options for the UI (the SplitLensOptions component will handle the filtering)
+       const allTreatments = [...new Set([...rightTreatments, ...leftTreatments])].sort();
+       const allDesigns = [...new Set([...rightDesigns, ...leftDesigns])].sort();
+       const allColors = [...new Set([...rightColors, ...leftColors])].sort();
+
+       return {
+         frameNames,
+         eyeSizes,
+         frameColors,
+         materials,
+         treatments: allTreatments,
+         designs: allDesigns,
+         colors: allColors
+       };
+     } else {
       // For single lens, use the original cascading logic
       const treatments = [...new Set(
         this.catalog.availability

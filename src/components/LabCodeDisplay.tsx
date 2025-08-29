@@ -39,10 +39,13 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
     }
   };
 
-  const hasCompleteSelection = selection.selectedFrameName && 
-                              selection.selectedMaterialId && 
-                              selection.selectedTreatmentId && 
-                              selection.selectedDesignId;
+  const hasCompleteSelection = selection.selectedFrameName && (
+    // For single lens mode
+    (!selection.isSplitLens && selection.selectedMaterialId && selection.selectedTreatmentId && selection.selectedDesignId) ||
+    // For split lens mode
+    (selection.isSplitLens && selection.rightMaterialId && selection.rightTreatmentId && selection.rightDesignId && 
+     selection.leftMaterialId && selection.leftTreatmentId && selection.leftDesignId)
+  );
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -149,7 +152,8 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
                   <span className="font-medium">{selection.selectedFrameColor}</span>
                 </div>
               )}
-              {selection.selectedMaterialId && (
+              {/* Single Lens Selections */}
+              {!selection.isSplitLens && selection.selectedMaterialId && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Material:</span>
                   <span className="font-medium">
@@ -157,7 +161,7 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
                   </span>
                 </div>
               )}
-              {selection.selectedTreatmentId && (
+              {!selection.isSplitLens && selection.selectedTreatmentId && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Treatment:</span>
                   <span className="font-medium">
@@ -165,7 +169,7 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
                   </span>
                 </div>
               )}
-              {selection.selectedDesignId && (
+              {!selection.isSplitLens && selection.selectedDesignId && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Design:</span>
                   <span className="font-medium">
@@ -173,11 +177,84 @@ const LabCodeDisplay: React.FC<LabCodeDisplayProps> = ({
                   </span>
                 </div>
               )}
-              {selection.selectedColor && (
+              {!selection.isSplitLens && selection.selectedColor && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Color:</span>
                   <span className="font-medium">{selection.selectedColor}</span>
                 </div>
+              )}
+              
+              {/* Split Lens Selections */}
+              {selection.isSplitLens && (
+                <>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="text-gray-600 mb-2 font-medium">Right Eye:</div>
+                    {selection.rightMaterialId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Material:</span>
+                        <span className="font-medium">
+                          {catalog.materialsById[selection.rightMaterialId]?.NAME_DISPLAY || selection.rightMaterialId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.rightTreatmentId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Treatment:</span>
+                        <span className="font-medium">
+                          {catalog.treatmentsById[selection.rightTreatmentId]?.NAME_DISPLAY || selection.rightTreatmentId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.rightDesignId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Design:</span>
+                        <span className="font-medium">
+                          {catalog.designsById[selection.rightDesignId]?.CATEGORY || selection.rightDesignId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.rightColor && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Color:</span>
+                        <span className="font-medium">{selection.rightColor}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="border-t pt-2 mt-2">
+                    <div className="text-gray-600 mb-2 font-medium">Left Eye:</div>
+                    {selection.leftMaterialId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Material:</span>
+                        <span className="font-medium">
+                          {catalog.materialsById[selection.leftMaterialId]?.NAME_DISPLAY || selection.leftMaterialId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.leftTreatmentId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Treatment:</span>
+                        <span className="font-medium">
+                          {catalog.treatmentsById[selection.leftTreatmentId]?.NAME_DISPLAY || selection.leftTreatmentId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.leftDesignId && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Design:</span>
+                        <span className="font-medium">
+                          {catalog.designsById[selection.leftDesignId]?.CATEGORY || selection.leftDesignId}
+                        </span>
+                      </div>
+                    )}
+                    {selection.leftColor && (
+                      <div className="flex justify-between ml-2">
+                        <span className="text-gray-600">Color:</span>
+                        <span className="font-medium">{selection.leftColor}</span>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
                              {selection.specialInstructions && selection.specialInstructions.length > 0 && (
                  <div className="border-t pt-2 mt-2">
