@@ -20,10 +20,10 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   };
 
   // Build frames index for SKU lookup
-  const framesIndex = new Map<string, {SKU?: string}>();
+  const framesIndex = new Map<string, string>();
   for (const r of catalog.frames) {
     const key = `${normFrameName(r.NAME)}|${toInt(r.EYE_SIZE)}|${normColor(r.COLOR)}`;
-    framesIndex.set(key, { SKU: r.SKU ?? "" });
+    framesIndex.set(key, r.SKU ?? "");
   }
 
   // Look up frame using normalized keys
@@ -38,15 +38,26 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   ) : undefined;
   
   // Get SKU from frames index
-  const sku = frameKey ? framesIndex.get(frameKey)?.SKU ?? "" : "";
+  const sku = frameKey ? framesIndex.get(frameKey) ?? "" : "";
+  
+  // Debug logging for SKU lookup
+  if (frameKey) {
+    console.log("CPRS SKU lookup:", {
+      key: frameKey,
+      frameName: selection.selectedFrameName,
+      eyeSize: selection.selectedEyeSize,
+      color: selection.selectedFrameColor,
+      found: framesIndex.has(frameKey),
+      sku: sku
+    });
+  }
   
   // Fail-fast logging for SKU lookup misses
   if (frameKey && !framesIndex.has(frameKey)) {
-    console.warn("CPRS SKU lookup miss", { 
-      key: frameKey, 
-      frameName: selection.selectedFrameName, 
-      eyeSize: selection.selectedEyeSize, 
-      color: selection.selectedFrameColor 
+    console.warn("Missing SKU for", frameKey, {
+      frameName: selection.selectedFrameName,
+      eyeSize: selection.selectedEyeSize,
+      color: selection.selectedFrameColor
     });
   }
     

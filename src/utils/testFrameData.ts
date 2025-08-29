@@ -4,8 +4,8 @@ export async function testFrameData() {
   try {
     console.log('Testing frame data parsing...');
     
-    // Load the workbook
-    await excelParser.loadWorkbook('/Optical_Catalog_Master_FRESH_SKU.xlsx');
+         // Load the workbook
+     await excelParser.loadWorkbook('/Optical_Catalog_Master_FRESH.xlsx');
     
     // Parse the catalog
     const catalog = excelParser.parseCatalog();

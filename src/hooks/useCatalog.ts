@@ -54,7 +54,7 @@ export const useCatalog = (): UseCatalogReturn => {
              // Force cache busting with a more aggressive approach
        const timestamp = new Date().getTime();
        const randomId = Math.random().toString(36).substring(7);
-       const url = `/Optical_Catalog_Master_FRESH_SKU.xlsx?v=sku-${timestamp}&r=${randomId}`; // cache-bust in dev
+       const url = `/Optical_Catalog_Master_FRESH.xlsx?v=sku-${timestamp}&r=${randomId}`; // cache-bust in dev
        await excelParser.loadWorkbook(url);
       const catalogData = excelParser.parseCatalog();
       

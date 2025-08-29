@@ -72,9 +72,20 @@ export class ExcelParser {
        }))
      });
      
-     // Log sheet names and SKU count
-     console.log("CATALOG sheets", Object.keys(this.workbook!.Sheets));
-     console.log("Frames with non-empty SKU", frames.filter(r => String(r.SKU||"").trim() !== "").length);
+           // Log sheet names and SKU count
+      console.log("CATALOG sheets", Object.keys(this.workbook!.Sheets));
+      console.log("Frames with non-empty SKU", frames.filter(r => String(r.SKU||"").trim() !== "").length);
+      
+      // Log sample frames with SKUs for verification
+      const framesWithSku = frames.filter(r => String(r.SKU||"").trim() !== "");
+      if (framesWithSku.length > 0) {
+        console.log("Sample frames with SKUs:", framesWithSku.slice(0, 5).map(f => ({
+          NAME: f.NAME,
+          EYE_SIZE: f.EYE_SIZE,
+          COLOR: f.COLOR,
+          SKU: f.SKU
+        })));
+      }
     const tints = this.parseSheet<TintRow>('Tints');
     const fresnelOptions = this.parseSheet<FresnelOptionRow>('FresnelOptions');
     const instructionCodes = this.parseSheet<InstructionCodeRow>('InstructionCodes');
