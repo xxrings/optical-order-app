@@ -42,15 +42,15 @@ describe('CPRS Exporter - Minimal Test', () => {
     expect(result).toContain('\\SEG TYPE1:');
     expect(result).toContain('\\SPECTACLE RX:');
     expect(result).toContain('\\OD1:\\SP:\\C:\\AX:\\PRISM:');
-    expect(result).toContain('\\PR1: \\PR2: \\PR3: \\ADD:');
-    expect(result).toContain('\\SBC:');
+    expect(result).toContain('     \\PR1: \\PR2: \\PR3: \\ADD:');
+    expect(result).toContain('     \\SBC:');
     expect(result).toContain('\\OS1:\\SP1:\\C1:\\AX1:\\PRISM1:');
-    expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
-    expect(result).toContain('\\SBC1:');
+    expect(result).toContain('     \\PR4: \\PR5: \\PR6: \\ADD1:');
+    expect(result).toContain('     \\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
     expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3: \\OS3:');
+    expect(result).toContain('\\FAR:\\OD3: \\OS3: ');
     expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
 

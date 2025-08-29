@@ -139,35 +139,35 @@ describe('CPRS Exporter - Golden Snapshot Test', () => {
  `\\EYEGLASS DELIVERY RECOMMENDATIONS:
  \\DELIVERY:
  \\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:
-           \\fr:7012R       \\sz:55      \\col:GREY                \\sku:7012R
+ \\fr:7012R       \\sz:55      \\col:GREY              \\sku:7012R
  \\FRAME STATUS:SUPPLIED
  \\EYEGLASS ORDERING INFORMATION:
 
  \\RX_EYE:BOTH \\RX:3
 
  \\LENS MATERIAL:CR39 CLEAR CLEAR 7X28 TRIFOCAL 7X28 \\CD:0 \\LC:52 \\LMD:CLEAR
- \\LENS TYPE:7X28 TRIFOCAL \\LT:78 \\SG:9:78
- \\SEG TYPE:7X28
+ \\LENS TYPE:7X28 TRIFOCAL \\LT:78
+ \\SEG TYPE:7X28 \\SG:9:78
 
  \\LENS MATERIAL1:
  \\LENS TYPE1:
  \\SEG TYPE1:
 
  \\SPECTACLE RX:
- \\OD1:\\SP:+0.25\\C:+0.25\\AX:001\\PRISM:0.25
- \\PR1:UP \\PR2:0.25 \\PR3:IN \\ADD:+0.75
- \\SBC:0.50
+ \\OD1:\\SP:+0.25\\C:+0.25\\AX:1\\PRISM:0.25
+      \\PR1:UP \\PR2:0.25 \\PR3:IN \\ADD:+0.75
+      \\SBC:0.50
 
- \\OS1:\\SP1:+0.25\\C1:+0.25\\AX1:001\\PRISM1:0.25
- \\PR4:UP \\PR5:0.25 \\PR6:IN \\ADD1:+0.75
- \\SBC1:0.50
+ \\OS1:\\SP1:+0.25\\C1:+0.25\\AX1:1\\PRISM1:0.25
+      \\PR4:UP \\PR5:0.25 \\PR6:IN \\ADD1:+0.75
+      \\SBC1:0.50
 
  \\SEGMENT HGT:
  \\OD2:22 \\OS2:22
 
  \\PUPILLARY DISTANCE:
- \\FAR:\\OD3:30.0 \\OS3:30.0
- \\NEAR:\\OD4:28.0 \\OS4:28.0
+ \\FAR:\\OD3:30 \\OS3:30 
+ \\NEAR:\\OD4:28 \\OS4:28
 
  \\SPECIAL INSTRUCTIONS:
  `);

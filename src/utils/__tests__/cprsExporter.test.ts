@@ -162,7 +162,7 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\EYEGLASS DELIVERY RECOMMENDATIONS:');
     expect(result).toContain('\\DELIVERY:');
     expect(result).toContain('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
-                                       expect(result).toContain('\\fr:TestFrame   \\sz:54      \\col:BLACK               \\sku:FRAME001');
+                                                                               expect(result).toContain('\\fr:TestFrame       \\sz:54      \\col:BLACK              \\sku:FRAME001');
     expect(result).toContain('\\FRAME STATUS:SUPPLIED');
     expect(result).toContain('\\EYEGLASS ORDERING INFORMATION:');
     expect(result).toContain('\\RX_EYE:BOTH \\RX:3');
@@ -173,17 +173,17 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\LENS TYPE1:');
     expect(result).toContain('\\SEG TYPE1:');
     expect(result).toContain('\\SPECTACLE RX:');
-    expect(result).toContain('\\OD1:\\SP:-2.50\\C:-1.00\\AX:090\\PRISM:');
-    expect(result).toContain('\\PR1: \\PR2: \\PR3: \\ADD:');
-    expect(result).toContain('\\SBC:');
-    expect(result).toContain('\\OS1:\\SP1:-2.25\\C1:-0.75\\AX1:085\\PRISM1:');
-    expect(result).toContain('\\PR4: \\PR5: \\PR6: \\ADD1:');
-    expect(result).toContain('\\SBC1:');
+         expect(result).toContain('\\OD1:\\SP:-2.50\\C:-1.00\\AX:90\\PRISM:');
+     expect(result).toContain('     \\PR1: \\PR2: \\PR3: \\ADD:');
+     expect(result).toContain('     \\SBC:');
+     expect(result).toContain('\\OS1:\\SP1:-2.25\\C1:-0.75\\AX1:85\\PRISM1:');
+     expect(result).toContain('     \\PR4: \\PR5: \\PR6: \\ADD1:');
+     expect(result).toContain('     \\SBC1:');
     expect(result).toContain('\\SEGMENT HGT:');
     expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3:30.5 \\OS3:30.0');
-    expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
+         expect(result).toContain('\\FAR:\\OD3:30.5 \\OS3:30.0 ');
+     expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
     expect(result).toContain('\\TI1:SOLID TINT \\SI1:1000');
     expect(result).toContain('\\TINT:BLUE, 50');
@@ -222,8 +222,8 @@ describe('CPRS Exporter', () => {
     expect(result).toContain('\\SEGMENT HGT:');
     expect(result).toContain('\\OD2: \\OS2:');
     expect(result).toContain('\\PUPILLARY DISTANCE:');
-    expect(result).toContain('\\FAR:\\OD3: \\OS3:');
-    expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
+         expect(result).toContain('\\FAR:\\OD3: \\OS3: ');
+     expect(result).toContain('\\NEAR:\\OD4: \\OS4:');
     expect(result).toContain('\\SPECIAL INSTRUCTIONS:');
   });
 

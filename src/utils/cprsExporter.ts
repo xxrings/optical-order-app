@@ -48,13 +48,13 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   lines.push('\\DELIVERY:');
   lines.push('\\FRAME:         \\SIZE:      \\COLOR:                \\SKU#:');
   
-  // Format frame header with exact spacing
+  // Format frame header with exact spacing from gold
   const frNoSpace = frame?.NAME ? frame.NAME.replace(/\s+/g, '') : '';
   const szInt = frame?.EYE_SIZE ? Math.round(Number(frame.EYE_SIZE)) : '';
   const colUpper = frame?.COLOR ? String(frame.COLOR).toUpperCase() : '';
   const sku = frame?.SKU ? String(frame.SKU) : '';
   
-  // Use exact spacing from CPRS template - match the spacing exactly
+  // Use exact spacing from gold template
   lines.push(`\\fr:${frNoSpace}       \\sz:${String(szInt)}      \\col:${colUpper}              \\sku:${sku}`);
   lines.push(`\\FRAME STATUS:${frame?.DISCONTINUED === 'Y' ? 'DISCONTINUED' : 'SUPPLIED'}`);
   lines.push('\\EYEGLASS ORDERING INFORMATION:');
@@ -66,10 +66,10 @@ export function buildCprsExport(orderData: CprsOrderData): string {
   lines.push(`\\RX_EYE:${rxEye} \\RX:${rxCode}`);
   lines.push('');
   
-  // Lens section
+  // Lens section - match gold format exactly
   const lensMaterial = formatLensMaterial(material, treatment, design, availability);
   const lensType = formatLensType(design, availability);
-  const segType = formatSegType(design);
+  const segType = formatSegType(design, design);
   
   lines.push(`\\LENS MATERIAL:${lensMaterial}`);
   lines.push(`\\LENS TYPE:${lensType}`);
@@ -206,10 +206,9 @@ function formatLensType(design?: any, availability?: any): string {
   
   let result = design.TYPE?.toUpperCase() || '';
   
-  // Add inline codes in exact order: LT, then optional SG
+  // Add inline codes in exact order: LT only (SG goes on SEG TYPE line)
   const codes: string[] = [];
   if (design.OUTPUT_LT) codes.push(`\\LT:${design.OUTPUT_LT}`);
-  if (design.OUTPUT_SG) codes.push(`\\SG:${design.OUTPUT_SG}`);
   
   if (codes.length > 0) {
     result += ' ' + codes.join(' ');
@@ -218,9 +217,17 @@ function formatLensType(design?: any, availability?: any): string {
   return result;
 }
 
-function formatSegType(design?: any): string {
+function formatSegType(design?: any, designForSg?: any): string {
   if (!design) return '';
-  return design.SEG_TYPE?.toUpperCase() || '';
+  
+  let result = design.SEG_TYPE?.toUpperCase() || '';
+  
+  // Add SG code if present
+  if (designForSg?.OUTPUT_SG) {
+    result += ` \\SG:${designForSg.OUTPUT_SG}`;
+  }
+  
+  return result;
 }
 
 function formatSpectacleRx(rxData?: RxData): string[] {
@@ -239,8 +246,9 @@ function formatSpectacleRx(rxData?: RxData): string[] {
   const sbcOd = formatBaseCurve(rxData?.rightBaseCurve);
   
   lines.push(`\\OD1:\\SP:${spOd}\\C:${cOd}\\AX:${axOd}\\PRISM:${prismOd}`);
-  lines.push(`\\PR1:${pr1Od} \\PR2:${pr2Od} \\PR3:${pr3Od} \\ADD:${addOd}`);
-  lines.push(`\\SBC:${sbcOd}`);
+  lines.push(`     \\PR1:${pr1Od} \\PR2:${pr2Od} \\PR3:${pr3Od} \\ADD:${addOd}`);
+  lines.push(`     \\SBC:${sbcOd}`);
+  lines.push('');
   
   // Left eye (OS) - CPRS format with sub-tokens
   const spOs = formatSphere(rxData?.leftSphere);
@@ -255,8 +263,8 @@ function formatSpectacleRx(rxData?: RxData): string[] {
   const sbcOs = formatBaseCurve(rxData?.leftBaseCurve);
   
   lines.push(`\\OS1:\\SP1:${spOs}\\C1:${cOs}\\AX1:${axOs}\\PRISM1:${prismOs}`);
-  lines.push(`\\PR4:${pr4Os} \\PR5:${pr5Os} \\PR6:${pr6Os} \\ADD1:${addOs}`);
-  lines.push(`\\SBC1:${sbcOs}`);
+  lines.push(`     \\PR4:${pr4Os} \\PR5:${pr5Os} \\PR6:${pr6Os} \\ADD1:${addOs}`);
+  lines.push(`     \\SBC1:${sbcOs}`);
   
   return lines;
 }
@@ -273,7 +281,7 @@ function formatCylinder(cylinder?: number): string {
 
 function formatAxis(axis?: number): string {
   if (axis === undefined) return '';
-  return axis.toString().padStart(3, '0');
+  return axis.toString();
 }
 
 function formatPrismValue(prism?: number): string {
@@ -341,21 +349,21 @@ function formatPupillaryDistance(measurements?: PatientMeasurements, design?: an
   
   if (lensType === 'SV') {
     // Single vision - mono PDs
-    const od3 = measurements?.rightMonoPD?.toFixed(1) || '';
-    const os3 = measurements?.leftMonoPD?.toFixed(1) || '';
-    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3}`);
+    const od3 = measurements?.rightMonoPD?.toString() || '';
+    const os3 = measurements?.leftMonoPD?.toString() || '';
+    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3} `);
     lines.push('\\NEAR:\\OD4: \\OS4:');
   } else if (lensType === 'MULTIFOCAL' || lensType === 'PROGRESSIVE') {
     // Multifocal/Progressive - distance and near PDs
-    const od3 = measurements?.rightMonoDistancePD?.toFixed(1) || '';
-    const os3 = measurements?.leftMonoDistancePD?.toFixed(1) || '';
-    const od4 = measurements?.rightMonoNearPD?.toFixed(1) || '';
-    const os4 = measurements?.leftMonoNearPD?.toFixed(1) || '';
-    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3}`);
+    const od3 = measurements?.rightMonoDistancePD?.toString() || '';
+    const os3 = measurements?.leftMonoDistancePD?.toString() || '';
+    const od4 = measurements?.rightMonoNearPD?.toString() || '';
+    const os4 = measurements?.leftMonoNearPD?.toString() || '';
+    lines.push(`\\FAR:\\OD3:${od3} \\OS3:${os3} `);
     lines.push(`\\NEAR:\\OD4:${od4} \\OS4:${os4}`);
   } else {
     // Default
-    lines.push('\\FAR:\\OD3: \\OS3:');
+    lines.push('\\FAR:\\OD3: \\OS3: ');
     lines.push('\\NEAR:\\OD4: \\OS4:');
   }
   
@@ -365,17 +373,16 @@ function formatPupillaryDistance(measurements?: PatientMeasurements, design?: an
 function formatSpecialInstructions(selection: SelectionState, catalog: Catalog): string[] {
   const lines: string[] = [];
   
-  // Always start with the header
-  lines.push('\\SPECIAL INSTRUCTIONS:');
-  
   const selectedInstructions = selection.specialInstructions || [];
   const selectedValues = selection.specialInstructionValues || {};
   
   if (selectedInstructions.length === 0) {
-    return lines; // Just the header, no additional lines
+    // Just the header, no additional content
+    lines.push('\\SPECIAL INSTRUCTIONS:');
+    return lines;
   }
   
-  // Build summary line with comma+space separation
+  // Build inline summary with comma+space separation
   const summaryParts: string[] = [];
   
   // Process instructions in TI order (TI1-TI13)
@@ -384,7 +391,7 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
     if (selectedInstructions.includes(tiCode)) {
       const instruction = catalog.instructionCodes.find(ic => ic.CODE === tiCode);
       if (instruction) {
-        let part = `\\${tiCode}:${instruction.LABEL}`;
+        let part = `\\TI${i === 1 ? '' : i}:${instruction.LABEL}`;
         
         // Add SI token if present
         if (instruction.OUTPUT_TEMPLATE) {
@@ -397,54 +404,12 @@ function formatSpecialInstructions(selection: SelectionState, catalog: Catalog):
     }
   }
   
-  if (summaryParts.length > 0) {
-    lines.push(summaryParts.join(', '));
-  }
+  // Create the inline header with summary
+  const headerLine = summaryParts.length > 0 
+    ? `\\SPECIAL INSTRUCTIONS:${summaryParts.join(', ')}`
+    : '\\SPECIAL INSTRUCTIONS:';
   
-  // Build detail lines in numeric order
-  for (let i = 1; i <= 13; i++) {
-    const tiCode = `TI${i}`;
-    if (selectedInstructions.includes(tiCode)) {
-      const instruction = catalog.instructionCodes.find(ic => ic.CODE === tiCode);
-      if (instruction) {
-        // Add the main TI line
-        let detailLine = `\\${tiCode}:${instruction.LABEL}`;
-        
-        // Add SI token if present
-        if (instruction.OUTPUT_TEMPLATE) {
-          const siValue = selectedValues[tiCode] || '';
-          detailLine += ` \\SI${i === 1 ? '' : i}:${siValue}`;
-        }
-        
-        lines.push(detailLine);
-        
-        // Add dependent lines based on TI type
-        if (tiCode === 'TI1' && selectedValues[tiCode]) {
-          // Solid tint - find the tint
-          const tintId = selectedValues[tiCode];
-          const tint = catalog.tints.find(t => t.TINT_ID === tintId);
-          if (tint) {
-            lines.push(`\\TINT:${tint.COLOR_NAME.toUpperCase()}, ${tint.PCT}`);
-          }
-        } else if (tiCode === 'TI2' && selectedValues[tiCode]) {
-          // Gradient tint
-          const tintId = selectedValues[tiCode];
-          const tint = catalog.tints.find(t => t.TINT_ID === tintId);
-          if (tint) {
-            lines.push(`\\TINT2:${tint.COLOR_NAME.toUpperCase()}, ${tint.PCT}`);
-          }
-        } else if (tiCode === 'TI13' && selectedValues[tiCode]) {
-          // Fresnel prism
-          const fresId = selectedValues[tiCode];
-          const fresnel = catalog.fresnelOptions.find(f => f.FRES_ID === fresId);
-          if (fresnel) {
-            lines.push(`\\FRES:${fresnel.VALUE}`);
-          }
-        }
-        // TI4-TI12 have no dependent lines
-      }
-    }
-  }
+  lines.push(headerLine);
   
   return lines;
 }
